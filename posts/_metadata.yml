@@ -8,8 +8,3 @@ freeze: true
 title-block-banner: true
 
 code-link: true
-
-code-fold: true
-code-line-numbers: true
-#setting up page layout
-page-layout: article
