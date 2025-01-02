@@ -2,14 +2,18 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://acoular.github.io/blog2/index.html</loc>
-    <lastmod>2025-01-02T18:39:02.450Z</lastmod>
-  </url>
-  <url>
-    <loc>https://acoular.github.io/blog2/about.html</loc>
-    <lastmod>2025-01-02T18:39:02.450Z</lastmod>
+    <lastmod>2025-01-02T18:47:38.624Z</lastmod>
   </url>
   <url>
     <loc>https://acoular.github.io/blog2/posts/welcome/index.html</loc>
-    <lastmod>2025-01-02T18:39:02.450Z</lastmod>
+    <lastmod>2025-01-02T18:47:38.628Z</lastmod>
+  </url>
+  <url>
+    <loc>https://acoular.github.io/blog2/about.html</loc>
+    <lastmod>2025-01-02T18:47:38.624Z</lastmod>
+  </url>
+  <url>
+    <loc>https://acoular.github.io/blog2/posts/getstart/getstart2.html</loc>
+    <lastmod>2025-01-02T18:47:38.627Z</lastmod>
   </url>
 </urlset>
