@@ -1,0 +1,16 @@
+---
+title-block-banner: false
+listing:
+  contents: posts
+  sort: "date desc"
+  type: grid
+  fields: [date, title, reading-time, image, description]
+  categories: true
+  sort-ui: false
+  filter-ui: false
+  image-placeholder: "profile.jpg"
+page-layout: full
+---
+## A blog on Acoular - the acoustic testing and source mapping software in Python
+
+

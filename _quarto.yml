@@ -1,0 +1,23 @@
+project:
+  type: website
+
+website:
+  title: "Acoular"
+  repo-url: https://github.com/acoular/blog2
+  repo-actions: 
+    - source
+    - issue
+  code-links: true
+  favicon: logo.png
+  navbar:
+    logo: "logo.png"
+    right:
+      - text: Documentation
+        href: https://www.acoular.org
+      - icon: github
+        href: https://github.com/acoular/acoular
+format:
+  html:
+    theme: simplex
+    css: styles.css
+    code-link: true
