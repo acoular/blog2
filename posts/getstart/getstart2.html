@@ -75,7 +75,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../../site_libs/quarto-html/quarto-syntax-highlighting-e26003cea8cd680ca0c55a263523d882.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-f5d7c4f040f36c8a08f5d4ecc117ccb2.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-0a67bdb526b4b41e98de55de6a364449.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -143,7 +143,7 @@ window.Quarto = {
 <body class="nav-fixed">
 
 <div id="quarto-search-results"></div>
-  <header id="quarto-header" class="headroom fixed-top quarto-banner">
+  <header id="quarto-header" class="headroom fixed-top">
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
@@ -177,58 +177,72 @@ window.Quarto = {
     </nav>
 </header>
 <!-- content -->
-<header id="title-block-header" class="quarto-title-block default page-columns page-full">
-  <div class="quarto-title-banner page-columns page-full">
-    <div class="quarto-title column-body">
-      <h1 class="title">Getting started with Acoular - Part 2</h1>
-            <p class="subtitle lead">How to use Acoular - simple example with 64 microphone array and three sources, frequency domain beamforming, additional methods and caching</p>
-                                <div class="quarto-categories">
-                <div class="quarto-category">getting started</div>
-                <div class="quarto-category">frequency domain</div>
-                <div class="quarto-category">deconvolution</div>
-                <div class="quarto-category">CLEAN SC</div>
-                <div class="quarto-category">functional beamforming</div>
-              </div>
-                  </div>
-  </div>
-    
-  
-  <div class="quarto-title-meta">
-
-      <div>
-      <div class="quarto-title-meta-heading">Author</div>
-      <div class="quarto-title-meta-contents">
-               <p>Ennes Sarradj </p>
-            </div>
-    </div>
-      
-      <div>
-      <div class="quarto-title-meta-heading">Published</div>
-      <div class="quarto-title-meta-contents">
-        <p class="date">April 2, 2021</p>
-      </div>
-    </div>
-    
-      
-    </div>
-    
-  
-  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
-    <div class="quarto-code-links"><h2>Code Links</h2><ul><li><a href="undefined"><i class="bi bi-link-45deg"></i></a></li></ul></div></div>
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a>
+  <ul class="collapse">
+  <li><a href="#diagonal-removal" id="toc-diagonal-removal" class="nav-link" data-scroll-target="#diagonal-removal">Diagonal removal</a></li>
+  <li><a href="#change-properties-in-the-processing-chain" id="toc-change-properties-in-the-processing-chain" class="nav-link" data-scroll-target="#change-properties-in-the-processing-chain">Change properties in the processing chain</a></li>
+  <li><a href="#functional-beamformer" id="toc-functional-beamformer" class="nav-link" data-scroll-target="#functional-beamformer">Functional beamformer</a></li>
+  <li><a href="#deconvolution" id="toc-deconvolution" class="nav-link" data-scroll-target="#deconvolution">Deconvolution</a></li>
+  <li><a href="#caching" id="toc-caching" class="nav-link" data-scroll-target="#caching">Caching</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/acoular/blog2/blob/main/posts/getstart/getstart2.ipynb" class="toc-action"><i class="bi bi-github"></i>View source</a></li></ul></div></nav>
+    </div>
 <!-- main -->
-<main class="content quarto-banner-title-block" id="quarto-document-content">
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Getting started with Acoular - Part 2</h1>
+<p class="subtitle lead">How to use Acoular - simple example with 64 microphone array and three sources, frequency domain beamforming, additional methods and caching</p>
+  <div class="quarto-categories">
+    <div class="quarto-category">getting started</div>
+    <div class="quarto-category">frequency domain</div>
+    <div class="quarto-category">deconvolution</div>
+    <div class="quarto-category">CLEAN SC</div>
+    <div class="quarto-category">functional beamforming</div>
+  </div>
+  </div>
 
 
 
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Ennes Sarradj </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">April 2, 2021</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
 
 
+</header>
+
+
+<section id="introduction" class="level2">
+<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
 <p>This is the second in a series of three blog posts about the basic use of Acoular. It assumes that you already have read the first post and continues by explaining some more concepts and additional methods.</p>
 <p>Acoular is a Python library that processes multichannel data (up to a few hundred channels) from acoustic measurements with a microphone array. The focus of the processing is on the construction of a map of acoustic sources. This is somewhat similar to taking an acoustic photograph of some sound sources. <!--more--></p>
-<p>To continue, we do the same set up as in <a href="../../../2021/04/01/getstart1.html">Part 1</a>. We define <code>TimeSamples</code>, <code>PowerSpectra</code>, <code>MicGeom</code>, <code>RectGrid</code> and <code>SteeringVector</code> objects and set up a <code>BeamformerBase</code>.</p>
+<p>To continue, we do the same set up as in <a href="../../posts/getstart/getstart1.html">Part 1</a>. We define <code>TimeSamples</code>, <code>PowerSpectra</code>, <code>MicGeom</code>, <code>RectGrid</code> and <code>SteeringVector</code> objects and set up a <code>BeamformerBase</code>.</p>
 <div id="cell-2" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> acoular</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>ts <span class="op">=</span> acoular.TimeSamples( name<span class="op">=</span><span class="st">"three_sources.h5"</span> )</span>
@@ -1181,7 +1195,9 @@ if (IPython.notebook.kernel !== null) {
 </div>
 </div>
 <p>The result is obviously the same as before.</p>
-<p>It was computed using a variant of the beamformer that applies the <em>diagonal removal technique</em>. This setting is the default and it means that we ignore the information in the main diagonal of the CSM, where the auto spectra (self-cross spectra) are stored. This is not too harmful in most cases and has the advantage that the map contains less artifacts. After this explanation, we of course now want to see the result with the full CSM including the diagonal (and hopefully with those artifacts).</p>
+<section id="diagonal-removal" class="level3">
+<h3 class="anchored" data-anchor-id="diagonal-removal">Diagonal removal</h3>
+<p>So far the result was computed using a variant of the beamformer that applies the <em>diagonal removal technique</em>. This setting is the default and it means that we ignore the information in the main diagonal of the CSM, where the auto spectra (self-cross spectra) are stored. This is not too harmful in most cases and has the advantage that the map contains less artifacts. After this explanation, we of course now want to see the result with the full CSM including the diagonal (and hopefully with those artifacts).</p>
 <p>We achieve this by setting the corresponding flag of the <code>bb</code> object. Have a look at the documentation on <a href="http://acoular.org/api_ref/generated/generated/acoular.fbeamform.BeamformerBase.html"><code>BeamformerBase</code></a> to understand the <code>r_diag</code> flag.</p>
 <div id="cell-6" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>bb.r_diag <span class="op">=</span> <span class="va">False</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -2122,6 +2138,9 @@ if (IPython.notebook.kernel !== null) {
 </div>
 </div>
 <p>Nice! But indeed there are some artifacts that we may have mistaken for additional weak sound sources if we did not know that there are exactly three sound sources.</p>
+</section>
+<section id="change-properties-in-the-processing-chain" class="level3">
+<h3 class="anchored" data-anchor-id="change-properties-in-the-processing-chain">Change properties in the processing chain</h3>
 <p>Changes in other objects will also affect the beamformer. To try this out, we change the file name in the <code>ts</code> object. Now this object gets data from new time histories. The <code>ps</code> and <code>bb</code> objects “know” about this automatically. No need to inform these other objects about the change. We can immediately ask for the new result and it will be computed.</p>
 <div id="cell-10" class="cell" data-scrolled="false" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>ts.name<span class="op">=</span><span class="st">"two_sources.h5"</span></span>
@@ -3062,6 +3081,9 @@ if (IPython.notebook.kernel !== null) {
 </div>
 </div>
 <p>There are only two sources. The result is different, obviously!</p>
+</section>
+<section id="functional-beamformer" class="level3">
+<h3 class="anchored" data-anchor-id="functional-beamformer">Functional beamformer</h3>
 <p>Now let us try a different type of beamformer. Instead of standard beamforming, we use <strong>functional beamforming</strong>. We set up a new object <code>bf</code> and specify the <span class="math inline">\(\gamma\)</span> parameter which is specific to that type of beamformer. We also use the same time histories for the three sources scene as before.</p>
 <div id="cell-12" class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>ts.name<span class="op">=</span><span class="st">"three_sources.h5"</span></span>
@@ -4003,6 +4025,9 @@ if (IPython.notebook.kernel !== null) {
 </div>
 </div>
 <p>Note the much smaller lobes of this beamformer. In other words, the image is less blurry.</p>
+</section>
+<section id="deconvolution" class="level3">
+<h3 class="anchored" data-anchor-id="deconvolution">Deconvolution</h3>
 <p>Instead of just beamforming we can apply a <strong>deconvolution</strong> method. Deconvolution methods aim to remove all blur and artifacts from the result. The original blurry beamforming result can be understood as the <em>convolution</em> of the ideal image with a filter kernel (the point spread function) which is specific to the beamforming algorithm. Deconvolution is any technique that attempts to reverse this convolution.</p>
 <p>In Acoular the deconvolution is achieved in a similar way to beamforming. Instead of defining a <code>BeamformerBase</code> type of object, we have to use a “beamformer” with deconvolution. In our example we use the CleanSC deconvolution method and <code>BeamformerCleansc</code> type of object. Despite the python class name we chose it is not just a beamformer.</p>
 <div id="cell-14" class="cell" data-execution_count="7">
@@ -4945,6 +4970,9 @@ if (IPython.notebook.kernel !== null) {
 </div>
 </div>
 <p>Depending on the computer, this computation may take some seconds already. Now there is just one grid “point” per source and the image looks perfect.</p>
+</section>
+<section id="caching" class="level3">
+<h3 class="anchored" data-anchor-id="caching">Caching</h3>
 <p>You may have noticed that whenever a results is computed, some messages about cache files appear. This happens because all computed results are cached to a file on disk. If one ask for the same result twice, it is still computed only once to save computing time and effort. This even means at the next start of this notebook no recalculation is necessary and all results are immediately available!</p>
 <p>We can try out the automatic caching mechanism by setting up another <code>BeamformerCleansc</code> object <code>bs1</code> with all the same parameters as the <code>bs</code> object we did already use.</p>
 <div id="cell-16" class="cell" data-execution_count="8">
@@ -6837,9 +6865,11 @@ if (IPython.notebook.kernel !== null) {
 </div>
 </div>
 <p>This took again some time. In our simple example the result looks not much different, but there was no way to know this before.</p>
-<p>In this blog post, we learned how to use alternative methods like functional beamforming and CleanSC. There are many more such methods implemented in Acoular and now you know how to check them out. The last <a href="getstart3">part</a> of this blog post series is about time domain beamforming.</p>
+<p>In this blog post, we learned how to use alternative methods like functional beamforming and CleanSC. There are many more such methods implemented in Acoular and now you know how to check them out. The last <a href="../../posts/getstart/getstart3.html">part</a> of this blog post series is about time domain beamforming.</p>
 
 
+</section>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -7264,4 +7294,4 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 
 
 
-<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions"><ul><li><a href="https://github.com/acoular/blog2/blob/main/posts/getstart/getstart2.ipynb" class="toc-action"><i class="bi bi-github"></i>View source</a></li><li><a href="https://github.com/acoular/blog2/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/acoular/blog2/blob/main/posts/getstart/getstart2.ipynb" class="toc-action"><i class="bi bi-github"></i>View source</a></li></ul></div></div></div></footer></body></html>

@@ -2,8 +2,11 @@
   {
     "listing": "/index.html",
     "items": [
-      "/posts/welcome/index.html",
-      "/posts/getstart/getstart2.html"
+      "/posts/auralization/drone-auralization-example.html",
+      "/posts/convert-input-data/convert-input-data.html",
+      "/posts/getstart/getstart3.html",
+      "/posts/getstart/getstart2.html",
+      "/posts/getstart/getstart1.html"
     ]
   }
 ]

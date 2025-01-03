@@ -2,18 +2,30 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://acoular.github.io/blog2/index.html</loc>
-    <lastmod>2025-01-02T18:47:38.624Z</lastmod>
+    <lastmod>2025-01-03T10:17:42.172Z</lastmod>
   </url>
   <url>
-    <loc>https://acoular.github.io/blog2/posts/welcome/index.html</loc>
-    <lastmod>2025-01-02T18:47:38.628Z</lastmod>
+    <loc>https://acoular.github.io/blog2/posts/auralization/drone-auralization-example.html</loc>
+    <lastmod>2025-01-03T10:17:42.177Z</lastmod>
+  </url>
+  <url>
+    <loc>https://acoular.github.io/blog2/posts/getstart/getstart3.html</loc>
+    <lastmod>2025-01-03T10:17:42.183Z</lastmod>
   </url>
   <url>
     <loc>https://acoular.github.io/blog2/about.html</loc>
-    <lastmod>2025-01-02T18:47:38.624Z</lastmod>
+    <lastmod>2025-01-03T10:17:42.172Z</lastmod>
+  </url>
+  <url>
+    <loc>https://acoular.github.io/blog2/posts/getstart/getstart1.html</loc>
+    <lastmod>2025-01-03T10:17:42.178Z</lastmod>
   </url>
   <url>
     <loc>https://acoular.github.io/blog2/posts/getstart/getstart2.html</loc>
-    <lastmod>2025-01-02T18:47:38.627Z</lastmod>
+    <lastmod>2025-01-03T10:17:42.181Z</lastmod>
+  </url>
+  <url>
+    <loc>https://acoular.github.io/blog2/posts/convert-input-data/convert-input-data.html</loc>
+    <lastmod>2025-01-03T10:17:42.177Z</lastmod>
   </url>
 </urlset>
