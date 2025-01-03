@@ -6,10 +6,10 @@ website:
   repo-url: https://github.com/acoular/blog2
   repo-actions: 
     - source
-    - issue
-  code-links: true
+  repo-branch: main
   favicon: logo.png
   navbar:
+    background: light
     logo: "logo.png"
     right:
       - text: Documentation
@@ -18,6 +18,5 @@ website:
         href: https://github.com/acoular/acoular
 format:
   html:
-    theme: simplex
+    theme: litera
     css: styles.css
-    code-link: true
