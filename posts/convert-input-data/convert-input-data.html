@@ -75,7 +75,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../../site_libs/quarto-html/quarto-syntax-highlighting-e26003cea8cd680ca0c55a263523d882.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-0a67bdb526b4b41e98de55de6a364449.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-cf9961f352a971de08b6cd6d2284e446.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -153,7 +153,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#how-to-import-your-data-into-acoular" id="toc-how-to-import-your-data-into-acoular" class="nav-link active" data-scroll-target="#how-to-import-your-data-into-acoular">How to import your data into Acoular</a></li>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
+  <li><a href="#hdf5-format" id="toc-hdf5-format" class="nav-link" data-scroll-target="#hdf5-format">HDF5 format</a></li>
+  <li><a href="#import-from-csv-format" id="toc-import-from-csv-format" class="nav-link" data-scroll-target="#import-from-csv-format">Import from CSV format</a></li>
+  <li><a href="#import-from-matlab" id="toc-import-from-matlab" class="nav-link" data-scroll-target="#import-from-matlab">Import from Matlab</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/acoular/blog2/blob/main/posts/convert-input-data/convert-input-data.ipynb" class="toc-action"><i class="bi bi-github"></i>View source</a></li></ul></div></nav>
     </div>
@@ -197,14 +200,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<section id="how-to-import-your-data-into-acoular" class="level1">
-<h1>How to import your data into Acoular</h1>
-<blockquote class="blockquote">
-<p>How to import data from foreign formats into Acoular, example for .csv and Matlab files - tags: [data import] - author: Ennes Sarradj - comments: true</p>
-</blockquote>
+<section id="introduction" class="level3">
+<h3 class="anchored" data-anchor-id="introduction">Introduction</h3>
 <p>Acoular is a Python library that processes multichannel data (up to a few hundred channels) from acoustic measurements with a microphone array which is stored in an HDF5 file. This blog post explains how to convert data available in other formats into this file format. As examples for other file formats we will use both .csv (comma separated text files) and .mat (Matlab files). <!--more--></p>
 <p>To demonstrate how to import and convert the data, we first need to get some data. In our case we use data from <a href="https://zenodo.org/record/5809069">Zenodo</a>, where a 64 channel recording of a scene with three sources is available in a number different formats. We use Python’s urllib for the download. Depending on your internet speed this may take a while:</p>
-<div id="cell-3" class="cell" data-execution_count="1">
+<div id="cell-2" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> urllib.request</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>url <span class="op">=</span> <span class="st">'https://zenodo.org/record/5809069/files/'</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> filename <span class="kw">in</span> (<span class="st">'three_sources.h5'</span>,<span class="st">'three_sources.csv'</span>,</span>
@@ -212,10 +212,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    urllib.request.urlretrieve(url<span class="op">+</span>filename, filename)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Now we have the same data in four different formats: Acoular’s HDF5, .csv, Matlab version &lt;= 7 and Matlab versions &gt;=7.3.</p>
+</section>
+<section id="hdf5-format" class="level3">
+<h3 class="anchored" data-anchor-id="hdf5-format">HDF5 format</h3>
 <p>HDF5 format is an open all purpose numerical data container file format. Data objects inside HDF5 files are stored in tree-like structure comparable to files and folders in a file system. Lets open the file and explore this structure, which is very simple in this case.</p>
 <p>We use the <a href="https://www.pytables.org/">pytables library</a> to access the file. This the very same library used by Acoular under the hood. Alternatively Acoular can also work with <a href="https://docs.h5py.org/en/stable/quick.html">h5py</a>.</p>
 <p>You could also use an HDF5 file viewer with a GUI (e.g.&nbsp;<a href="https://www.hdfgroup.org/downloads/hdfview/">HDFView</a>).</p>
-<div id="cell-5" class="cell" data-execution_count="2">
+<div id="cell-4" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> tables</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>h5file <span class="op">=</span> tables.open_file(<span class="st">'three_sources.h5'</span>, mode <span class="op">=</span> <span class="st">'r'</span>) <span class="co"># read only mode</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>h5file.root</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -225,7 +228,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <p>In its root sits just one object (one ‘child’), which is an EArray (extensible array). Lets inspect its properties:</p>
-<div id="cell-7" class="cell" data-execution_count="3">
+<div id="cell-6" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>h5file.root.time_data</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="3">
 <pre><code>/time_data (EArray(51200, 64)) ''
@@ -237,7 +240,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <p>We see that this array has the size of 51200 (samples) by 64 (channels). The values are stored as 32 bit float numbers. While less than the usual 64 bit, 32 bit accuracy is more than enough in this case and it saves file space. The data itself can be accessed just like for a numpy array. As an example, we read the first 10 samples of channel 47.</p>
-<div id="cell-9" class="cell" data-scrolled="true" data-execution_count="4">
+<div id="cell-8" class="cell" data-scrolled="true" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>h5file.root.time_data[:<span class="dv">10</span>,<span class="dv">47</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="4">
 <pre><code>array([ 1.5875906 , -0.7917087 ,  3.1555338 ,  1.0036362 , -3.1655273 ,
@@ -246,7 +249,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <p>Along with the data itself, the object stores also some metadata (‘attributes’).</p>
-<div id="cell-11" class="cell" data-execution_count="5">
+<div id="cell-10" class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>h5file.root.time_data.attrs</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="5">
 <pre><code>/time_data._v_attrs (AttributeSet), 5 attributes:
@@ -259,8 +262,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>There is one custom attribute here, which is <code>sample_freq</code>. It specifies the sampling frequency. In our case 51200.0 Hz.</p>
 <p>If we now have data in some other format that we want to use with Acoular, there are two options: 1. We read that data and convert it into an HDF5 file that follows the specification explained. This is demonstrated in this blog post. 2. We extend Acoular to read the other file format directly. This would mean to subclass the <code>TimeSamples</code> class and requires some understanding of Acoular’s code and working mechanism.</p>
+</section>
+<section id="import-from-csv-format" class="level3">
+<h3 class="anchored" data-anchor-id="import-from-csv-format">Import from CSV format</h3>
 <p>The first option shall now be demonstrated using .csv formatted data. Despite beeing extra inefficient this human-readable text format is widely used. The file contains the same number of floating point numbers separated by commas on each line. Some .csv files have also one or more header lines explaining the data contained in the file. In our case there are no header lines. There are multiple options how to read such file into Python. We are going to use Numpy for this. Be warned, the import of this (relatively small) 80 MByte file takes some time.</p>
-<div id="cell-13" class="cell" data-scrolled="false" data-execution_count="6">
+<div id="cell-12" class="cell" data-scrolled="false" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>datacsv <span class="op">=</span> np.genfromtxt(<span class="st">'three_sources.csv'</span>, delimiter<span class="op">=</span><span class="st">','</span>, dtype<span class="op">=</span><span class="st">'float32'</span>)</span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>datacsv</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -281,7 +287,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <p>Now the data is stored in the <code>datacsv</code> array. the next step is to create a new HFD5 file, store the data into that file and add the attribute for the sampling frequency.</p>
-<div id="cell-15" class="cell" data-execution_count="7">
+<div id="cell-14" class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>h5filecsv <span class="op">=</span> tables.open_file(<span class="st">'three_sources_from_csv.h5'</span>, mode<span class="op">=</span><span class="st">'w'</span>, </span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>                             title<span class="op">=</span><span class="st">'three_sources'</span>)</span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>earraycsv <span class="op">=</span> h5filecsv.create_earray(<span class="st">'/'</span>, <span class="st">'time_data'</span>, obj<span class="op">=</span>datacsv)</span>
@@ -299,8 +305,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>Just as before with the original HDF5 file we now have the data in new HDF5 file that could be used as data source for Acoular. There is one possible pitfall with this approach: the data is completely read into the computer memory before beeing stored into the HDF5 file. If the data is really huge, say hundreds of channels and some minutes of recording, it might not fit into the memory. In this case, a more sophisticated approach is needed, where chunks of data are read and stored consecutively. Because we use an EArray, this is possible, but we would have to modify the code.</p>
 <p>As mentioned before, there are other options to read the .csv data. One that deserves to be mentioned here is <a href="https://pandas.pydata.org/">Pandas</a> which reads a lot of different data formats.</p>
+</section>
+<section id="import-from-matlab" class="level3">
+<h3 class="anchored" data-anchor-id="import-from-matlab">Import from Matlab</h3>
 <p>For some reason it is quite popular to store data in the format used by Matlab. However, it is important to know that despite the same extension (.mat), there are different formats. If we have any of the formats used prior to Matlab v7, then we can use Scipy to import this:</p>
-<div id="cell-17" class="cell" data-execution_count="8">
+<div id="cell-16" class="cell" data-execution_count="8">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.io <span class="im">import</span> loadmat</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>ans <span class="op">=</span> loadmat(<span class="st">'three_sourcesv7.mat'</span>)[<span class="st">'ans'</span>]</span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>datamat7 <span class="op">=</span> np.array(ans, dtype<span class="op">=</span><span class="st">'float32'</span>)</span>
@@ -320,7 +329,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <p>The format of .mat file from version 7.3 onwards is essentially an HDF5 file itself! It just uses another file name extension. Of course the internal structure is different from what Acoular is using. However, we can open it with pytables and read the data in it.</p>
-<div id="cell-19" class="cell" data-execution_count="9">
+<div id="cell-18" class="cell" data-execution_count="9">
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>matfile73 <span class="op">=</span> tables.open_file(<span class="st">'three_sourcesv73.mat'</span>, mode <span class="op">=</span> <span class="st">'r'</span>)</span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="co"># be aware of Matlab transposing the array here</span></span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>datamat73 <span class="op">=</span> np.array(matfile73.root.ans[:,:], dtype<span class="op">=</span><span class="st">'float32'</span>).T</span>

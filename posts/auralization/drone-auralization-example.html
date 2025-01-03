@@ -75,7 +75,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../../site_libs/quarto-html/quarto-syntax-highlighting-e26003cea8cd680ca0c55a263523d882.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-0a67bdb526b4b41e98de55de6a364449.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-cf9961f352a971de08b6cd6d2284e446.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -177,8 +177,20 @@ window.Quarto = {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
+  <li><a href="#generating-the-drone-signal" id="toc-generating-the-drone-signal" class="nav-link" data-scroll-target="#generating-the-drone-signal">Generating the drone signal</a></li>
+  <li><a href="#microphone-positions" id="toc-microphone-positions" class="nav-link" data-scroll-target="#microphone-positions">Microphone positions</a></li>
+  <li><a href="#flight-path" id="toc-flight-path" class="nav-link" data-scroll-target="#flight-path">Flight path</a></li>
+  <li><a href="#drone-directivity" id="toc-drone-directivity" class="nav-link" data-scroll-target="#drone-directivity">Drone directivity</a></li>
+  <li><a href="#export-a-wav-file" id="toc-export-a-wav-file" class="nav-link" data-scroll-target="#export-a-wav-file">Export a WAV file</a></li>
+  <li><a href="#spectrogram" id="toc-spectrogram" class="nav-link" data-scroll-target="#spectrogram">Spectrogram</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/acoular/blog2/blob/main/posts/auralization/drone-auralization-example.ipynb" class="toc-action"><i class="bi bi-github"></i>View source</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -221,6 +233,8 @@ window.Quarto = {
 </header>
 
 
+<section id="introduction" class="level3">
+<h3 class="anchored" data-anchor-id="introduction">Introduction</h3>
 <p>In addition to its capabilities to detect and analyze sources with implementations of various array methods, Acoular has several tools for synthesizing signals and simulating measurements. This can be helpful when designing an experiment and pre-testing measurement setups and algorithms without having to actually set up the hardware.</p>
 <p>In this post, we’ll be using these tools to simulate the flyby of a multicopter drone as it would be experienced by an arbitrary observer. Instead of the typical microphone array with dozens of microphones, the output will be restricted to just two channels, which shall represent the “ears” of a person.</p>
 <p>For applications of the simulation workflow in an array context, see also <a href="https://doi.org/10.1051/aacus/2022052">here</a> or <a href="https://doi.org/10.2514/6.2023-3818">here</a>.</p>
@@ -236,6 +250,9 @@ window.Quarto = {
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+</section>
+<section id="generating-the-drone-signal" class="level3">
+<h3 class="anchored" data-anchor-id="generating-the-drone-signal">Generating the drone signal</h3>
 <p>As Acoular does not feature a specific way to generate drone signals, we define our own signal class for doing that. It is derived from the existing <a href="https://www.acoular.org/api_ref/generated/generated/acoular.signals.SignalGenerator.html#acoular.signals.SignalGenerator"><code>SignalGenerator</code></a> class.</p>
 <p>Signals of multicopter drones are usually very recognizable, often featuring strong tonal components caused by the rotors. In reality, the radiated noise depends on a lot of factors, which we will not consider in detail here. For now, it shall be enough to assume the signal to be dependent on the number of rotors (with respective rotational speeds) and the number of blades per rotor. From that, the blade passing frequencies are calculated as dominant components and nicely mixed with some higher harmonics and broadband noise.</p>
 <p>The new class shall be called <code>DroneSignalGenerator</code> and its interface will allow setting a list of “revolutions per minute” values for the rotors, implicitly setting the numbers of rotors, and the already mentioned number of blades per rotor.</p>
@@ -331,6 +348,9 @@ window.Quarto = {
 </div>
 </div>
 </div>
+</section>
+<section id="microphone-positions" class="level3">
+<h3 class="anchored" data-anchor-id="microphone-positions">Microphone positions</h3>
 <p>In addition to the signal, we need characteristics of the source itself, its movement, the environment, and the way it is observed. We start with the “observer”, i.e.&nbsp;a microphone array with only two microphones where the ears of a standing person might be located. The observer’s head is looking mostly towards positive <span class="math inline">\(y\)</span>, but also slightly to the side from which the drone will come later.</p>
 <div id="52694ad2-bb1d-4fc2-8775-b90d4f2adf17" class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>m <span class="op">=</span> ac.MicGeom()</span>
@@ -338,6 +358,9 @@ window.Quarto = {
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>                       [<span class="op">-</span><span class="fl">0.03</span>, <span class="fl">0.03</span>], <span class="co"># y</span></span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>                       [ <span class="fl">1.7</span> , <span class="fl">1.7</span>]]) <span class="co"># z</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+</section>
+<section id="flight-path" class="level3">
+<h3 class="anchored" data-anchor-id="flight-path">Flight path</h3>
 <p>Next, the flight path is defined. A trajectory in Acoular is defined via its “waypoints” with corresponding times. We can set as many waypoints as we want as a dictionary.</p>
 <p>Let’s say that our drone flies about 10 m above ground, from left to right, and a little in front of the observer. The flight speed is 16 m/s in <span class="math inline">\(x\)</span> direction. The absolute speed will be a little higher, since we slightly and randomly vary the <span class="math inline">\(z\)</span> and <span class="math inline">\(y\)</span> positions from one waypoint to the next.</p>
 <div id="a6ea2de4-2ee8-4b0c-84cb-03967000e648" class="cell" data-execution_count="6">
@@ -387,6 +410,9 @@ window.Quarto = {
 </div>
 </div>
 <p>Compared to the length of the flight path, the two observer microphones are positioned rather close to each other, so they appear almost as one position in the plot.</p>
+</section>
+<section id="drone-directivity" class="level3">
+<h3 class="anchored" data-anchor-id="drone-directivity">Drone directivity</h3>
 <p>Now we define an actual source. Many drones exhibit a strong directivity, so using a <a href="https://www.acoular.org/api_ref/generated/generated/acoular.sources.MovingPointSourceDipole.html#acoular.sources.MovingPointSourceDipole"><code>MovingPointSourceDipole</code></a> seems a good choice here. If we don’t explicitly specify otherwise, the dipole lobes will be oriented along the z axis, which is what we want in this case. For calculating the observed sound pressure, i.e.&nbsp;for taking into account the sound travel path source to the observer, the object needs to know what kind of <a href="https://www.acoular.org/api_ref/generated/acoular.environments.html#module-acoular.environments">environment</a> it will be existing in. In our case, we just define a resting fluid with a speed of sound of 343 m/s.</p>
 <div id="573e91d7-98de-4df0-8975-4ca57066bfaf" class="cell" data-execution_count="8">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># We'll keep the environment simple for now: just air at standard conditions with speed of sound 343 m/s</span></span>
@@ -417,6 +443,9 @@ window.Quarto = {
 <span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Mix the original source and the mirror source</span></span>
 <span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>drone_above_ground <span class="op">=</span> ac.SourceMixer( sources <span class="op">=</span> [p, p_reflection] )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+</section>
+<section id="export-a-wav-file" class="level3">
+<h3 class="anchored" data-anchor-id="export-a-wav-file">Export a WAV file</h3>
 <p>Now we export a wav file of our simulation, so that we can listen to it with any audio player software. Because of the lazy evaluation paradigm, all the code above should run rather quickly, since no serious calculations were done up to now. This will change here, as the source signal is propagated sample-per-sample to generate the observed sound pressure time signals. The export may take a few minutes, so don’t be alarmed if you don’t immediately get the output.</p>
 <p>Before letting the data stream be exported as wav file, however, we divert it through a <a href="https://www.acoular.org/api_ref/generated/generated/acoular.tprocess.TimeCache.html#acoular.tprocess.TimeCache"><code>TimeCache</code></a> object, which already writes the data on the disk (in Acoular-compatible format). The reason for this is that we do not need to recalculate everything if we happen to need the exact same data at a later point in time.</p>
 <div id="4ee3d2a1-d7be-4e9c-b442-ce0a645e1fff" class="cell">
@@ -433,6 +462,9 @@ window.Quarto = {
 <span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>output.save()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>That’s it, we did a simple drone auralization using the tools available in Acoular. If you listen to the output file with properly connected stereo headphones, you should hear something that resembles a quadcopter moving from left to right.</p>
+</section>
+<section id="spectrogram" class="level3">
+<h3 class="anchored" data-anchor-id="spectrogram">Spectrogram</h3>
 <p>Finally, let’s visualize the transient signal of one channel in a spectrogram. We use Acoular’s <a href="https://www.acoular.org/api_ref/generated/generated/generated/acoular.tools.helpers.return_result.html#acoular.tools.helpers.return_result"><code>return_result</code></a> function on the output object to get the whole signal track at once instead of from a block-wise yielding generator.</p>
 <div id="a0404263-b357-42df-b388-97468a7bdd43" class="cell" data-execution_count="11">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>plt.figure(<span class="dv">3</span>,(<span class="dv">10</span>,<span class="dv">5</span>))</span>
@@ -473,6 +505,7 @@ window.Quarto = {
 </div>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -897,4 +930,4 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 
 
 
-<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions"><ul><li><a href="https://github.com/acoular/blog2/blob/main/posts/auralization/drone-auralization-example.ipynb" class="toc-action"><i class="bi bi-github"></i>View source</a></li></ul></div></div></div></footer></body></html>
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/acoular/blog2/blob/main/posts/auralization/drone-auralization-example.ipynb" class="toc-action"><i class="bi bi-github"></i>View source</a></li></ul></div></div></div></footer></body></html>
