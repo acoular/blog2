@@ -260,9 +260,9 @@ window.Quarto = {
 <p>The new class shall be called <code>DroneSignalGenerator</code> and its interface will allow setting a list of “revolutions per minute” values for the rotors, implicitly setting the numbers of rotors, and the already mentioned number of blades per rotor.</p>
 <div id="0654ec3c-a84d-4e81-835c-12ef560a3c51" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># import traits.api to enforce data types in object parameters</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> traits.api <span class="im">import</span> List, Int</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> traits.api <span class="im">import</span> cached_property, Int, List, Property</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> DroneSignalGenerator( ac.SignalGenerator ):</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> DroneSignalGenerator( ac.NoiseGenerator ):</span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co">    Class for generating a synthetic multicopter drone signal. </span></span>
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co">    This is just a basic example class for demonstration purposes </span></span>
@@ -278,47 +278,54 @@ window.Quarto = {
 <span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Default: 2</span></span>
 <span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    num_blades_per_rotor <span class="op">=</span> Int(<span class="dv">2</span>)</span>
 <span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> signal( <span class="va">self</span> ):</span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>        <span class="co">"""</span></span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="co">        function that returns the full signal</span></span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a><span class="co">        """</span></span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>        <span class="co"># initialize a random generator for noise generation</span></span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>        rng <span class="op">=</span> np.random.default_rng(seed <span class="op">=</span> <span class="dv">42</span>)</span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>        <span class="co"># use 1/f² broadband noise as basis for the signal</span></span>
-<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>        wn <span class="op">=</span> rng.standard_normal(<span class="va">self</span>.numsamples) <span class="co"># normal distributed values</span></span>
-<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>        wnf <span class="op">=</span> np.fft.rfft(wn) <span class="co"># transform to freq domain</span></span>
-<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>        wnf <span class="op">/=</span> (np.linspace(<span class="fl">0.1</span>,<span class="dv">1</span>,<span class="bu">len</span>(wnf))<span class="op">*</span><span class="dv">5</span>)<span class="op">**</span><span class="dv">2</span> <span class="co"># spectrum ~ 1/f²</span></span>
-<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>        sig <span class="op">=</span> np.fft.irfft(wnf) <span class="co"># transform to time domain</span></span>
-<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>        <span class="co"># vector with all time instances</span></span>
-<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>        t <span class="op">=</span> np.arange(<span class="va">self</span>.numsamples, dtype<span class="op">=</span><span class="bu">float</span>) <span class="op">/</span> <span class="va">self</span>.sample_freq</span>
-<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>        <span class="co"># iterate over all rotors</span></span>
-<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> rpm <span class="kw">in</span> <span class="va">self</span>.rpm_list:</span>
-<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>            f_base <span class="op">=</span> rpm <span class="op">/</span> <span class="dv">60</span> <span class="co"># rotor speed in Hz</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>    <span class="co"># internal identifier</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>    digest <span class="op">=</span> Property(depends_on<span class="op">=</span>[<span class="st">'rms'</span>, <span class="st">'seed'</span>, <span class="st">'sample_freq'</span>, <span class="st">'num_samples'</span>, <span class="st">'rpm_list'</span>, <span class="st">'num_blades_per_rotor'</span>])</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">@cached_property</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> _get_digest(<span class="va">self</span>):</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> digest(<span class="va">self</span>)</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> signal( <span class="va">self</span> ):</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>        <span class="co">"""</span></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a><span class="co">        function that returns the full signal</span></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a><span class="co">        """</span></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>        <span class="co"># initialize a random generator for noise generation</span></span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>        rng <span class="op">=</span> np.random.default_rng(seed <span class="op">=</span> <span class="va">self</span>.seed)</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>        <span class="co"># use 1/f² broadband noise as basis for the signal</span></span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>        wn <span class="op">=</span> rng.standard_normal(<span class="va">self</span>.num_samples) <span class="co"># normal distributed values</span></span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>        wnf <span class="op">=</span> np.fft.rfft(wn) <span class="co"># transform to freq domain</span></span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>        wnf <span class="op">/=</span> (np.linspace(<span class="fl">0.1</span>,<span class="dv">1</span>,<span class="bu">len</span>(wnf))<span class="op">*</span><span class="dv">5</span>)<span class="op">**</span><span class="dv">2</span> <span class="co"># spectrum ~ 1/f²</span></span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>        sig <span class="op">=</span> np.fft.irfft(wnf) <span class="co"># transform to time domain</span></span>
 <span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>            <span class="co"># randomly set phase of rotor</span></span>
-<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>            phase <span class="op">=</span> rng.uniform() <span class="op">*</span> <span class="dv">2</span><span class="op">*</span>np.pi</span>
-<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>            </span>
-<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>            <span class="co"># calculate higher harmonics up to 50 times the rotor speed</span></span>
-<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> n <span class="kw">in</span> np.arange(<span class="dv">50</span>)<span class="op">+</span><span class="dv">1</span>:</span>
-<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>                <span class="co"># if we're looking at a blade passing frequency, make it louder</span></span>
-<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> n <span class="op">%</span> <span class="va">self</span>.num_blades_per_rotor <span class="op">==</span> <span class="dv">0</span>:</span>
-<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>                    amp <span class="op">=</span> <span class="dv">1</span></span>
-<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>                <span class="cf">else</span>:</span>
-<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>                    amp <span class="op">=</span> <span class="fl">0.2</span></span>
-<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a>                <span class="co"># exponentially decrease amplitude for higher freqs with arbitrary factor</span></span>
-<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a>                amp <span class="op">*=</span> np.exp(<span class="op">-</span>n<span class="op">/</span><span class="dv">10</span>)</span>
-<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a>                </span>
-<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a>                <span class="co"># add harmonic signal component to existing signal</span></span>
-<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a>                sig <span class="op">+=</span> amp <span class="op">*</span> np.sin(<span class="dv">2</span><span class="op">*</span>np.pi<span class="op">*</span>n <span class="op">*</span> f_base <span class="op">*</span> t <span class="op">+</span> phase) </span>
-<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a>        <span class="co"># return signal normalized to given RMS value</span></span>
-<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> sig <span class="op">*</span> <span class="va">self</span>.rms <span class="op">/</span> np.std(sig)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>        <span class="co"># vector with all time instances</span></span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>        t <span class="op">=</span> np.arange(<span class="va">self</span>.num_samples, dtype<span class="op">=</span><span class="bu">float</span>) <span class="op">/</span> <span class="va">self</span>.sample_freq</span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>        <span class="co"># iterate over all rotors</span></span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> rpm <span class="kw">in</span> <span class="va">self</span>.rpm_list:</span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>            f_base <span class="op">=</span> rpm <span class="op">/</span> <span class="dv">60</span> <span class="co"># rotor speed in Hz</span></span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>            <span class="co"># randomly set phase of rotor</span></span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>            phase <span class="op">=</span> rng.uniform() <span class="op">*</span> <span class="dv">2</span><span class="op">*</span>np.pi</span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>            </span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a>            <span class="co"># calculate higher harmonics up to 50 times the rotor speed</span></span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> n <span class="kw">in</span> np.arange(<span class="dv">50</span>)<span class="op">+</span><span class="dv">1</span>:</span>
+<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a>                <span class="co"># if we're looking at a blade passing frequency, make it louder</span></span>
+<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> n <span class="op">%</span> <span class="va">self</span>.num_blades_per_rotor <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a>                    amp <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a>                <span class="cf">else</span>:</span>
+<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a>                    amp <span class="op">=</span> <span class="fl">0.2</span></span>
+<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a>                <span class="co"># exponentially decrease amplitude for higher freqs with arbitrary factor</span></span>
+<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a>                amp <span class="op">*=</span> np.exp(<span class="op">-</span>n<span class="op">/</span><span class="dv">10</span>)</span>
+<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a>                </span>
+<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a>                <span class="co"># add harmonic signal component to existing signal</span></span>
+<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a>                sig <span class="op">+=</span> amp <span class="op">*</span> np.sin(<span class="dv">2</span><span class="op">*</span>np.pi<span class="op">*</span>n <span class="op">*</span> f_base <span class="op">*</span> t <span class="op">+</span> phase) </span>
+<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a>        <span class="co"># return signal normalized to given RMS value</span></span>
+<span id="cb2-64"><a href="#cb2-64" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> sig <span class="op">*</span> <span class="va">self</span>.rms <span class="op">/</span> np.std(sig)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Now we use the newly-defined class to create an object with parameters for a specific drone signal. We choose to have a quadcopter with four rotors. As the simulation should feature the drone flying by, it makes sense for two of the rotors running at a higher speed than the other two, so as to tilt a quadcopter to let it fly in one direction. Moreover, all rotors are chosen to have slightly different rotational speeds to make it a little more realistic (15010 rpm / 14962 rpm and 13536 rpm / 13007 rpm).</p>
-<p>The <code>sample_freq</code> and <code>numsamples</code> traits that we set here are inherited from the <code>SignalGenerator</code> base class. We use a standard sampling frequency for audio signals of 44’100 Hz here and generate a signal of a little above 10 seconds. The strength of the signal can be set via the (also inherited) <code>rms</code> trait, but we just use the default value of 1.0 here, so don’t have to specifically set it.</p>
+<p>The <code>sample_freq</code> and <code>num_samples</code> traits that we set here are inherited from the <code>NoiseGenerator</code> base class. We use a standard sampling frequency for audio signals of 44’100 Hz here and generate a signal of a little above 10 seconds. The strength of the signal can be set via the (also inherited) <code>rms</code> trait, but we just use the default value of 1.0 here, so don’t have to specifically set it.</p>
 <div id="360c7c12-ddb0-407d-bb1e-0fa8471518e8" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># length of signal</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>t_msm <span class="op">=</span> <span class="fl">10.5</span> <span class="co"># s</span></span>
@@ -328,7 +335,7 @@ window.Quarto = {
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>drone_signal <span class="op">=</span> DroneSignalGenerator(rpm_list <span class="op">=</span> [<span class="dv">15010</span>,<span class="dv">14962</span>,<span class="dv">13536</span>,<span class="dv">13007</span>], </span>
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>                                    num_blades_per_rotor <span class="op">=</span> <span class="dv">2</span>, </span>
 <span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>                                    sample_freq <span class="op">=</span> f_sample, </span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>                                    numsamples <span class="op">=</span> f_sample<span class="op">*</span>t_msm)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>                                    num_samples <span class="op">=</span> f_sample<span class="op">*</span>t_msm)</span>
 <span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="co"># If you're running the example in an interactive environment, you might want</span></span>
 <span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="co"># to listen to the pure signal by uncommenting the two following lines:</span></span>
@@ -356,7 +363,7 @@ window.Quarto = {
 <p>In addition to the signal, we need characteristics of the source itself, its movement, the environment, and the way it is observed. We start with the “observer”, i.e.&nbsp;a microphone array with only two microphones where the ears of a standing person might be located. The observer’s head is looking mostly towards positive <span class="math inline">\(y\)</span>, but also slightly to the side from which the drone will come later.</p>
 <div id="52694ad2-bb1d-4fc2-8775-b90d4f2adf17" class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>m <span class="op">=</span> ac.MicGeom()</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>m.mpos_tot <span class="op">=</span> np.array([[<span class="op">-</span><span class="fl">0.07</span>, <span class="fl">0.07</span>], <span class="co"># x positions, all values in m</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>m.pos_total <span class="op">=</span> np.array([[<span class="op">-</span><span class="fl">0.07</span>, <span class="fl">0.07</span>], <span class="co"># x positions, all values in m</span></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>                       [<span class="op">-</span><span class="fl">0.03</span>, <span class="fl">0.03</span>], <span class="co"># y</span></span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>                       [ <span class="fl">1.7</span> , <span class="fl">1.7</span>]]) <span class="co"># z</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -387,7 +394,7 @@ window.Quarto = {
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>plt.figure(<span class="dv">2</span>,(<span class="dv">10</span>,<span class="dv">3</span>))</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co"># plot observer</span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>plt.plot(m.mpos[<span class="dv">0</span>,:], m.mpos[<span class="dv">1</span>,:], <span class="st">'rx'</span>, label <span class="op">=</span> <span class="st">'observer'</span>)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>plt.plot(m.pos[<span class="dv">0</span>,:], m.pos[<span class="dv">1</span>,:], <span class="st">'rx'</span>, label <span class="op">=</span> <span class="st">'observer'</span>)</span>
 <span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="co"># plot trajectory</span></span>
 <span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>times <span class="op">=</span> np.linspace(<span class="dv">0</span>,<span class="dv">11</span>,<span class="dv">100</span>)</span>
@@ -452,11 +459,11 @@ window.Quarto = {
 <p>Before letting the data stream be exported as wav file, however, we divert it through a <a href="https://www.acoular.org/api_ref/generated/generated/acoular.tprocess.TimeCache.html#acoular.tprocess.TimeCache"><code>TimeCache</code></a> object, which already writes the data on the disk (in Acoular-compatible format). The reason for this is that we do not need to recalculate everything if we happen to need the exact same data at a later point in time.</p>
 <div id="4ee3d2a1-d7be-4e9c-b442-ce0a645e1fff" class="cell">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Write data stream onto disk for later re-use. This step is not necessary if runtime isn't an issue.</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>cached_signals <span class="op">=</span> ac.TimeCache(source <span class="op">=</span> drone_above_ground)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>cached_signals <span class="op">=</span> ac.Cache(source <span class="op">=</span> drone_above_ground)</span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Prepare wav output.</span></span>
 <span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="co"># If you don't need caching, you can directly put "source = drone_above_ground" here.</span></span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>output <span class="op">=</span> ac.WriteWAV(name <span class="op">=</span> <span class="st">'drone_flyby_with_ground_reflection.wav'</span>,</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>output <span class="op">=</span> ac.WriteWAV(<span class="bu">file</span> <span class="op">=</span> <span class="st">'drone_flyby_with_ground_reflection.wav'</span>,</span>
 <span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>                     source <span class="op">=</span> cached_signals, </span>
 <span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>                     channels <span class="op">=</span> [<span class="dv">0</span>,<span class="dv">1</span>]) <span class="co"># export both channels as stereo</span></span>
 <span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a></span>
