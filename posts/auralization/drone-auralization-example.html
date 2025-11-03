@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.7.33">
+<meta name="generator" content="quarto-1.8.25">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -70,14 +70,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../../logo.png" rel="icon" type="image/png">
 <script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
 <script src="../../site_libs/quarto-html/popper.min.js"></script>
 <script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-ea385d0e468b0dd5ea5bf0780b1290d9.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-20b1ecae35e67cca589bbf34ecf5bb2e.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-6b8a81dd5b796dcdfe539eff2a107fd5.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -120,7 +121,7 @@ const typesetMath = (el) => {
     var macros = [];
     for (var i = 0; i < mathElements.length; i++) {
       var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
         window.katex.render(texText.data, mathElements[i], {
           displayMode: mathElements[i].classList.contains('display'),
           throwOnError: false,
@@ -147,7 +148,8 @@ window.Quarto = {
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a href="../../index.html" class="navbar-brand navbar-brand-logo">
-    <img src="../../logo.png" alt="" class="navbar-logo">
+    <img src="../../logo.png" alt="" class="navbar-logo light-content">
+    <img src="../../logo.png" alt="" class="navbar-logo dark-content">
     </a>
     <a class="navbar-brand" href="../../index.html">
     <span class="navbar-title">Acoular</span>
@@ -248,9 +250,9 @@ window.Quarto = {
 </ul>
 <p>First, we import Acoular, NumPy, and Matplotlib’s plotting functionality</p>
 <div id="71ac8522-1bbf-4727-bd8c-308bc931a3bb" class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> acoular <span class="im">as</span> ac</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> acoular <span class="im">as</span> ac</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
 <section id="generating-the-drone-signal" class="level3">
@@ -259,7 +261,7 @@ window.Quarto = {
 <p>Signals of multicopter drones are usually very recognizable, often featuring strong tonal components caused by the rotors. In reality, the radiated noise depends on a lot of factors, which we will not consider in detail here. For now, it shall be enough to assume the signal to be dependent on the number of rotors (with respective rotational speeds) and the number of blades per rotor. From that, the blade passing frequencies are calculated as dominant components and nicely mixed with some higher harmonics and broadband noise.</p>
 <p>The new class shall be called <code>DroneSignalGenerator</code> and its interface will allow setting a list of “revolutions per minute” values for the rotors, implicitly setting the numbers of rotors, and the already mentioned number of blades per rotor.</p>
 <div id="0654ec3c-a84d-4e81-835c-12ef560a3c51" class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># import traits.api to enforce data types in object parameters</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># import traits.api to enforce data types in object parameters</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> traits.api <span class="im">import</span> cached_property, Int, List, Property</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> DroneSignalGenerator( ac.NoiseGenerator ):</span>
@@ -322,12 +324,12 @@ window.Quarto = {
 <span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a>                sig <span class="op">+=</span> amp <span class="op">*</span> np.sin(<span class="dv">2</span><span class="op">*</span>np.pi<span class="op">*</span>n <span class="op">*</span> f_base <span class="op">*</span> t <span class="op">+</span> phase) </span>
 <span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a>        <span class="co"># return signal normalized to given RMS value</span></span>
-<span id="cb2-64"><a href="#cb2-64" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> sig <span class="op">*</span> <span class="va">self</span>.rms <span class="op">/</span> np.std(sig)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-64"><a href="#cb2-64" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> sig <span class="op">*</span> <span class="va">self</span>.rms <span class="op">/</span> np.std(sig)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Now we use the newly-defined class to create an object with parameters for a specific drone signal. We choose to have a quadcopter with four rotors. As the simulation should feature the drone flying by, it makes sense for two of the rotors running at a higher speed than the other two, so as to tilt a quadcopter to let it fly in one direction. Moreover, all rotors are chosen to have slightly different rotational speeds to make it a little more realistic (15010 rpm / 14962 rpm and 13536 rpm / 13007 rpm).</p>
 <p>The <code>sample_freq</code> and <code>num_samples</code> traits that we set here are inherited from the <code>NoiseGenerator</code> base class. We use a standard sampling frequency for audio signals of 44’100 Hz here and generate a signal of a little above 10 seconds. The strength of the signal can be set via the (also inherited) <code>rms</code> trait, but we just use the default value of 1.0 here, so don’t have to specifically set it.</p>
 <div id="360c7c12-ddb0-407d-bb1e-0fa8471518e8" class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># length of signal</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># length of signal</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>t_msm <span class="op">=</span> <span class="fl">10.5</span> <span class="co"># s</span></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># sampling frequency</span></span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>f_sample <span class="op">=</span> <span class="dv">44100</span> <span class="co"># Hz</span></span>
@@ -340,15 +342,15 @@ window.Quarto = {
 <span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="co"># If you're running the example in an interactive environment, you might want</span></span>
 <span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="co"># to listen to the pure signal by uncommenting the two following lines:</span></span>
 <span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="co">#from IPython.display import Audio</span></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="co">#display(Audio(drone_signal.signal(),rate = f_sample))</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="co">#display(Audio(drone_signal.signal(),rate = f_sample))</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>The spectrum (PSD) of our signal looks like this:</p>
 <div id="b89272a3-48b0-400a-8876-f558183c5632" class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>plt.figure(<span class="dv">1</span>,(<span class="dv">10</span>,<span class="dv">3</span>))</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>plt.figure(<span class="dv">1</span>,(<span class="dv">10</span>,<span class="dv">3</span>))</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>plt.psd(drone_signal.signal(), </span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>        Fs <span class="op">=</span> f_sample,</span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>        NFFT <span class="op">=</span> <span class="dv">4096</span>)</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -362,10 +364,10 @@ window.Quarto = {
 <h3 class="anchored" data-anchor-id="microphone-positions">Microphone positions</h3>
 <p>In addition to the signal, we need characteristics of the source itself, its movement, the environment, and the way it is observed. We start with the “observer”, i.e.&nbsp;a microphone array with only two microphones where the ears of a standing person might be located. The observer’s head is looking mostly towards positive <span class="math inline">\(y\)</span>, but also slightly to the side from which the drone will come later.</p>
 <div id="52694ad2-bb1d-4fc2-8775-b90d4f2adf17" class="cell" data-execution_count="5">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>m <span class="op">=</span> ac.MicGeom()</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>m <span class="op">=</span> ac.MicGeom()</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>m.pos_total <span class="op">=</span> np.array([[<span class="op">-</span><span class="fl">0.07</span>, <span class="fl">0.07</span>], <span class="co"># x positions, all values in m</span></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>                       [<span class="op">-</span><span class="fl">0.03</span>, <span class="fl">0.03</span>], <span class="co"># y</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>                       [ <span class="fl">1.7</span> , <span class="fl">1.7</span>]]) <span class="co"># z</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>                       [ <span class="fl">1.7</span> , <span class="fl">1.7</span>]]) <span class="co"># z</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
 <section id="flight-path" class="level3">
@@ -373,7 +375,7 @@ window.Quarto = {
 <p>Next, the flight path is defined. A trajectory in Acoular is defined via its “waypoints” with corresponding times. We can set as many waypoints as we want as a dictionary.</p>
 <p>Let’s say that our drone flies about 10 m above ground, from left to right, and a little in front of the observer. The flight speed is 16 m/s in <span class="math inline">\(x\)</span> direction. The absolute speed will be a little higher, since we slightly and randomly vary the <span class="math inline">\(z\)</span> and <span class="math inline">\(y\)</span> positions from one waypoint to the next.</p>
 <div id="a6ea2de4-2ee8-4b0c-84cb-03967000e648" class="cell" data-execution_count="6">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>flight_speed <span class="op">=</span> <span class="dv">16</span> <span class="co"># m/s</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>flight_speed <span class="op">=</span> <span class="dv">16</span> <span class="co"># m/s</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 11 seconds trajectory, which is a little more than we have signal for</span></span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>ts <span class="op">=</span> np.arange(<span class="dv">12</span>) </span>
@@ -387,11 +389,11 @@ window.Quarto = {
 <span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>                    <span class="dv">10</span> <span class="op">+</span> rng.uniform(<span class="op">-</span><span class="fl">0.3</span>,<span class="fl">0.3</span>)) <span class="co"># randomly vary z position up to ±0.3 m around 10 m height</span></span>
 <span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>              <span class="cf">for</span> t <span class="kw">in</span> ts }</span>
 <span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>traj <span class="op">=</span> ac.Trajectory(points <span class="op">=</span> waypoints)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>traj <span class="op">=</span> ac.Trajectory(points <span class="op">=</span> waypoints)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Let’s plot the trajectory together with the observer positions, as viewed from above.</p>
 <div id="3b7b8751-19b2-446a-a8b0-612c8440335b" class="cell" data-execution_count="7">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>plt.figure(<span class="dv">2</span>,(<span class="dv">10</span>,<span class="dv">3</span>))</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>plt.figure(<span class="dv">2</span>,(<span class="dv">10</span>,<span class="dv">3</span>))</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co"># plot observer</span></span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>plt.plot(m.pos[<span class="dv">0</span>,:], m.pos[<span class="dv">1</span>,:], <span class="st">'rx'</span>, label <span class="op">=</span> <span class="st">'observer'</span>)</span>
@@ -409,7 +411,7 @@ window.Quarto = {
 <span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'$y$ / m'</span>)</span>
 <span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
 <span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>plt.axis(<span class="st">'equal'</span>)</span>
-<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -424,7 +426,7 @@ window.Quarto = {
 <h3 class="anchored" data-anchor-id="drone-directivity">Drone directivity</h3>
 <p>Now we define an actual source. Many drones exhibit a strong directivity, so using a <a href="https://www.acoular.org/api_ref/generated/generated/acoular.sources.MovingPointSourceDipole.html#acoular.sources.MovingPointSourceDipole"><code>MovingPointSourceDipole</code></a> seems a good choice here. If we don’t explicitly specify otherwise, the dipole lobes will be oriented along the z axis, which is what we want in this case. For calculating the observed sound pressure, i.e.&nbsp;for taking into account the sound travel path source to the observer, the object needs to know what kind of <a href="https://www.acoular.org/api_ref/generated/acoular.environments.html#module-acoular.environments">environment</a> it will be existing in. In our case, we just define a resting fluid with a speed of sound of 343 m/s.</p>
 <div id="573e91d7-98de-4df0-8975-4ca57066bfaf" class="cell" data-execution_count="8">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># We'll keep the environment simple for now: just air at standard conditions with speed of sound 343 m/s</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># We'll keep the environment simple for now: just air at standard conditions with speed of sound 343 m/s</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>e <span class="op">=</span> ac.Environment(c<span class="op">=</span><span class="fl">343.</span>)</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Define point source</span></span>
@@ -433,11 +435,11 @@ window.Quarto = {
 <span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>                               conv_amp <span class="op">=</span> <span class="va">True</span>,       <span class="co"># take into account convective amplification</span></span>
 <span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>                               mics <span class="op">=</span> m,              <span class="co"># set the "array" with which to measure the sound field</span></span>
 <span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>                               start <span class="op">=</span> <span class="fl">0.5</span>,           <span class="co"># observation starts 0.5 seconds after signal starts at drone</span></span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>                               env <span class="op">=</span> e)               <span class="co"># the environment the source is moving in</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>                               env <span class="op">=</span> e)               <span class="co"># the environment the source is moving in</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>With this, we defined our source. But for a little more realism, let’s add a “mirror source” to simulate ground reflections. The properties of this source are exactly the same as for the original source, except for the <span class="math inline">\(z\)</span> coordinate, which is inversed here. After the definition of our mirror source, both source are combined into a joint sound field description via a <a href="https://www.acoular.org/api_ref/generated/generated/acoular.sources.SourceMixer.html#acoular.sources.SourceMixer"><code>SourceMixer</code></a> object.</p>
 <div id="2d5850bb-14cb-425f-bdee-9d5ee3b698a9" class="cell" data-execution_count="9">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Copy the waypoints from the original source into a new trajectory, but with inverted z</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Copy the waypoints from the original source into a new trajectory, but with inverted z</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>waypoints_reflection <span class="op">=</span> { time : (x, y, <span class="op">-</span>z) <span class="cf">for</span> time, (x, y, z) <span class="kw">in</span> waypoints.items() }</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>traj_reflection <span class="op">=</span> ac.Trajectory(points <span class="op">=</span> waypoints_reflection)</span>
 <span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
@@ -450,7 +452,7 @@ window.Quarto = {
 <span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>                                          env <span class="op">=</span> e) </span>
 <span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Mix the original source and the mirror source</span></span>
-<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>drone_above_ground <span class="op">=</span> ac.SourceMixer( sources <span class="op">=</span> [p, p_reflection] )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>drone_above_ground <span class="op">=</span> ac.SourceMixer( sources <span class="op">=</span> [p, p_reflection] )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
 <section id="export-a-wav-file" class="level3">
@@ -458,7 +460,7 @@ window.Quarto = {
 <p>Now we export a wav file of our simulation, so that we can listen to it with any audio player software. Because of the lazy evaluation paradigm, all the code above should run rather quickly, since no serious calculations were done up to now. This will change here, as the source signal is propagated sample-per-sample to generate the observed sound pressure time signals. The export may take a few minutes, so don’t be alarmed if you don’t immediately get the output.</p>
 <p>Before letting the data stream be exported as wav file, however, we divert it through a <a href="https://www.acoular.org/api_ref/generated/generated/acoular.tprocess.TimeCache.html#acoular.tprocess.TimeCache"><code>TimeCache</code></a> object, which already writes the data on the disk (in Acoular-compatible format). The reason for this is that we do not need to recalculate everything if we happen to need the exact same data at a later point in time.</p>
 <div id="4ee3d2a1-d7be-4e9c-b442-ce0a645e1fff" class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Write data stream onto disk for later re-use. This step is not necessary if runtime isn't an issue.</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Write data stream onto disk for later re-use. This step is not necessary if runtime isn't an issue.</span></span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>cached_signals <span class="op">=</span> ac.Cache(source <span class="op">=</span> drone_above_ground)</span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Prepare wav output.</span></span>
@@ -468,7 +470,7 @@ window.Quarto = {
 <span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>                     channels <span class="op">=</span> [<span class="dv">0</span>,<span class="dv">1</span>]) <span class="co"># export both channels as stereo</span></span>
 <span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Start the actual export</span></span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>output.save()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>output.save()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>That’s it, we did a simple drone auralization using the tools available in Acoular. If you listen to the output file with properly connected stereo headphones, you should hear something that resembles a quadcopter moving from left to right.</p>
 </section>
@@ -476,7 +478,7 @@ window.Quarto = {
 <h3 class="anchored" data-anchor-id="spectrogram">Spectrogram</h3>
 <p>Finally, let’s visualize the transient signal of one channel in a spectrogram. We use Acoular’s <a href="https://www.acoular.org/api_ref/generated/generated/generated/acoular.tools.helpers.return_result.html#acoular.tools.helpers.return_result"><code>return_result</code></a> function on the output object to get the whole signal track at once instead of from a block-wise yielding generator.</p>
 <div id="a0404263-b357-42df-b388-97468a7bdd43" class="cell" data-execution_count="11">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>plt.figure(<span class="dv">3</span>,(<span class="dv">10</span>,<span class="dv">5</span>))</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>plt.figure(<span class="dv">3</span>,(<span class="dv">10</span>,<span class="dv">5</span>))</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>plt.specgram(ac.tools.return_result(output)[:,<span class="dv">0</span>], </span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>             Fs <span class="op">=</span> f_sample,</span>
 <span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>             noverlap <span class="op">=</span> <span class="dv">4096</span><span class="op">-</span><span class="dv">256</span>,</span>
@@ -487,7 +489,7 @@ window.Quarto = {
 <span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>plt.colorbar()</span>
 <span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'$t$ / s'</span>)</span>
 <span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'$f$ / Hz'</span>)</span>
-<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -498,7 +500,7 @@ window.Quarto = {
 </div>
 <p>Although this simulation is comparativly simple and far from realistic, the spectrogram already exhibits many of the features observed in actual measurement data of drone flybys: the frequency shift due to the Doppler effect, higher levels when the drone is close to the observer, and interference patterns due to ground reflections.</p>
 <div id="52efb397-82cb-474c-bd07-71346828d758" class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co">#hide</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co">#hide</span></span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>plt.figure(<span class="dv">4</span>,(<span class="dv">7</span>,<span class="dv">5</span>))</span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>plt.specgram(ac.tools.return_result(output)[:,<span class="dv">0</span>], </span>
 <span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>             Fs <span class="op">=</span> f_sample,</span>
@@ -510,7 +512,7 @@ window.Quarto = {
 <span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>plt.colorbar()</span>
 <span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'$t$ / s'</span>)</span>
 <span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'$f$ / Hz'</span>)</span>
-<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>plt.savefig(<span class="st">"thumb_drone_spectrogram.png"</span>, transparent<span class="op">=</span><span class="va">True</span>, dpi<span class="op">=</span><span class="dv">50</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>plt.savefig(<span class="st">"thumb_drone_spectrogram.png"</span>, transparent<span class="op">=</span><span class="va">True</span>, dpi<span class="op">=</span><span class="dv">50</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 
 
@@ -568,13 +570,14 @@ window.Quarto = {
       e.clearSelection();
     }
     const getTextToCopy = function(trigger) {
-        const codeEl = trigger.previousElementSibling.cloneNode(true);
-        for (const childEl of codeEl.children) {
-          if (isCodeAnnotation(childEl)) {
-            childEl.remove();
-          }
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
         }
-        return codeEl.innerText;
+      }
+      return codeEl.innerText;
     }
     const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
       text: getTextToCopy
