@@ -1,31 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://blog.acoular.org/about.html</loc>
-    <lastmod>2025-11-03T19:16:35.444Z</lastmod>
-  </url>
-  <url>
-    <loc>https://blog.acoular.org/posts/getstart/getstart3.html</loc>
-    <lastmod>2025-11-03T19:16:35.459Z</lastmod>
-  </url>
-  <url>
-    <loc>https://blog.acoular.org/posts/getstart/getstart2.html</loc>
-    <lastmod>2025-11-03T19:16:35.455Z</lastmod>
-  </url>
-  <url>
     <loc>https://blog.acoular.org/index.html</loc>
-    <lastmod>2025-11-03T19:16:35.444Z</lastmod>
-  </url>
-  <url>
-    <loc>https://blog.acoular.org/posts/convert-input-data/convert-input-data.html</loc>
-    <lastmod>2025-11-03T19:16:35.449Z</lastmod>
+    <lastmod>2026-07-23T14:11:14.991Z</lastmod>
   </url>
   <url>
     <loc>https://blog.acoular.org/posts/getstart/getstart1.html</loc>
-    <lastmod>2025-11-03T19:16:35.450Z</lastmod>
+    <lastmod>2026-07-23T14:11:14.996Z</lastmod>
+  </url>
+  <url>
+    <loc>https://blog.acoular.org/posts/getstart/getstart3.html</loc>
+    <lastmod>2026-07-23T14:11:15.005Z</lastmod>
+  </url>
+  <url>
+    <loc>https://blog.acoular.org/posts/convert-input-data/convert-input-data.html</loc>
+    <lastmod>2026-07-23T14:11:14.995Z</lastmod>
   </url>
   <url>
     <loc>https://blog.acoular.org/posts/auralization/drone-auralization-example.html</loc>
-    <lastmod>2025-11-03T19:16:35.448Z</lastmod>
+    <lastmod>2026-07-23T14:11:14.994Z</lastmod>
+  </url>
+  <url>
+    <loc>https://blog.acoular.org/posts/getstart/getstart2.html</loc>
+    <lastmod>2026-07-23T14:11:15.001Z</lastmod>
+  </url>
+  <url>
+    <loc>https://blog.acoular.org/about.html</loc>
+    <lastmod>2026-07-23T14:11:14.991Z</lastmod>
   </url>
 </urlset>
