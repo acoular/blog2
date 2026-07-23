@@ -3,6 +3,7 @@ project:
 
 website:
   title: "Acoular"
+  site-url: https://blog.acoular.org
   repo-url: https://github.com/acoular/blog2
   repo-actions: 
     - source
