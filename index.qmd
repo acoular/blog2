@@ -10,7 +10,9 @@ listing:
   filter-ui: false
   image-placeholder: "logo.png"
   image-height: "100"
-  feed: true
+  feed:
+    items: 6
+    type: partial
 page-layout: full
 ---
 ## A blog on Acoular - the acoustic testing and source mapping software in Python
