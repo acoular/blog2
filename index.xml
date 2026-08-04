@@ -9,7 +9,7 @@
 <link>https://blog.acoular.org/</link>
 <atom:link href="https://blog.acoular.org/index.xml" rel="self" type="application/rss+xml"/>
 <description></description>
-<generator>quarto-1.9.38</generator>
+<generator>quarto-1.10.18</generator>
 <lastBuildDate>Sat, 21 Sep 2024 00:00:00 GMT</lastBuildDate>
 <item>
   <title>Drone auralization example</title>
@@ -71,6 +71,13 @@
   <guid>https://blog.acoular.org/posts/getstart/getstart1.html</guid>
   <pubDate>Thu, 01 Apr 2021 00:00:00 GMT</pubDate>
   <media:content url="https://blog.acoular.org/posts/getstart/thumb_getstart.png" medium="image" type="image/png" height="108" width="144"/>
+</item>
+<item>
+  <title>Validating Three-Source Localization with Real Microphone Arrays</title>
+  <link>https://blog.acoular.org/posts/three-sources-experiment/three_sources_lab_validation.html</link>
+  <description><![CDATA[ <em>An experimental simulation to measurement comparison using a compact UMA-16 and a large-aperture 64-microphone Vogel spiral array</em> ]]></description>
+  <guid>https://blog.acoular.org/posts/three-sources-experiment/three_sources_lab_validation.html</guid>
+  <pubDate>Tue, 04 Aug 2026 17:46:45 GMT</pubDate>
 </item>
 </channel>
 </rss>

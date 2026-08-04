@@ -6,10 +6,8 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Ennes Sarradj">
-<meta name="dcterms.date" content="2022-06-24">
 
-<title>How to import your data into Acoular – Acoular</title>
+<title>Validating Three-Source Localization with Real Microphone Arrays – Acoular</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -112,6 +110,35 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="../../styles.css">
 </head>
@@ -162,44 +189,38 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
-  <li><a href="#hdf5-format" id="toc-hdf5-format" class="nav-link" data-scroll-target="#hdf5-format">HDF5 format</a></li>
-  <li><a href="#import-from-csv-format" id="toc-import-from-csv-format" class="nav-link" data-scroll-target="#import-from-csv-format">Import from CSV format</a></li>
-  <li><a href="#import-from-matlab" id="toc-import-from-matlab" class="nav-link" data-scroll-target="#import-from-matlab">Import from Matlab</a></li>
+  <li><a href="#simulation-method-used-as-reference" id="toc-simulation-method-used-as-reference" class="nav-link active" data-scroll-target="#simulation-method-used-as-reference">Simulation method used as reference</a></li>
+  <li><a href="#experimental-principle" id="toc-experimental-principle" class="nav-link" data-scroll-target="#experimental-principle">Experimental principle</a></li>
+  <li><a href="#measurement-hardware-and-software" id="toc-measurement-hardware-and-software" class="nav-link" data-scroll-target="#measurement-hardware-and-software">Measurement hardware and software</a></li>
+  <li><a href="#generating-three-independent-broadband-sources" id="toc-generating-three-independent-broadband-sources" class="nav-link" data-scroll-target="#generating-three-independent-broadband-sources">Generating three independent broadband sources</a></li>
+  <li><a href="#measurement-chain-and-calibration" id="toc-measurement-chain-and-calibration" class="nav-link" data-scroll-target="#measurement-chain-and-calibration">Measurement chain and calibration</a></li>
+  <li><a href="#first-measurement-uma-16-minidsp" id="toc-first-measurement-uma-16-minidsp" class="nav-link" data-scroll-target="#first-measurement-uma-16-minidsp">First measurement: UMA-16 miniDSP</a>
+  <ul class="collapse">
+  <li><a href="#uma-16-result-at-7-khz" id="toc-uma-16-result-at-7-khz" class="nav-link" data-scroll-target="#uma-16-result-at-7-khz">UMA-16 result at 7 kHz</a></li>
+  </ul></li>
+  <li><a href="#second-measurement-64-microphone-vogel-spiral-array" id="toc-second-measurement-64-microphone-vogel-spiral-array" class="nav-link" data-scroll-target="#second-measurement-64-microphone-vogel-spiral-array">Second measurement: 64-microphone Vogel spiral array</a>
+  <ul class="collapse">
+  <li><a href="#vogel-array-result-at-2.5-khz" id="toc-vogel-array-result-at-2.5-khz" class="nav-link" data-scroll-target="#vogel-array-result-at-2.5-khz">Vogel-array result at 2.5 kHz</a></li>
+  </ul></li>
+  <li><a href="#observations" id="toc-observations" class="nav-link" data-scroll-target="#observations">Observations</a></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
+  <li><a href="#software-and-references" id="toc-software-and-references" class="nav-link" data-scroll-target="#software-and-references">Software and references</a></li>
   </ul>
-<div class="toc-actions"><ul><li><a href="https://github.com/acoular/blog2/blob/main/posts/convert-input-data/convert-input-data.ipynb" class="toc-action"><i class="bi bi-github"></i>View source</a></li></ul></div></nav>
+<div class="toc-actions"><ul><li><a href="https://github.com/acoular/blog2/blob/main/posts/three-sources-experiment/three_sources_lab_validation.ipynb" class="toc-action"><i class="bi bi-github"></i>View source</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">How to import your data into Acoular</h1>
-<p class="subtitle lead">How to import data from foreign formats into Acoular, example for .csv and Matlab files</p>
-  <div class="quarto-categories">
-    <div class="quarto-category">data import</div>
-    <div class="quarto-category">csv</div>
-    <div class="quarto-category">Matlab</div>
-  </div>
-  </div>
+<h1 class="title">Validating Three-Source Localization with Real Microphone Arrays</h1>
+</div>
 
 
 
 <div class="quarto-title-meta">
 
-    <div>
-    <div class="quarto-title-meta-heading">Author</div>
-    <div class="quarto-title-meta-contents">
-             <p>Ennes Sarradj </p>
-          </div>
-  </div>
     
-    <div>
-    <div class="quarto-title-meta-heading">Published</div>
-    <div class="quarto-title-meta-contents">
-      <p class="date">June 24, 2022</p>
-    </div>
-  </div>
   
     
   </div>
@@ -209,155 +230,184 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<section id="introduction" class="level3">
-<h3 class="anchored" data-anchor-id="introduction">Introduction</h3>
-<p>Acoular is a Python library that processes multichannel data (up to a few hundred channels) from acoustic measurements with a microphone array which is stored in an HDF5 file. This blog post explains how to convert data available in other formats into this file format. As examples for other file formats we will use both .csv (comma separated text files) and .mat (Matlab files). <!--more--></p>
-<p>To demonstrate how to import and convert the data, we first need to get some data. In our case we use data from <a href="https://zenodo.org/record/5809069">Zenodo</a>, where a 64 channel recording of a scene with three sources is available in a number different formats. We use Python’s urllib for the download. Depending on your internet speed this may take a while:</p>
-<div id="cell-2" class="cell" data-execution_count="1">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> urllib.request</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>url <span class="op">=</span> <span class="st">'https://zenodo.org/record/5809069/files/'</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> filename <span class="kw">in</span> (<span class="st">'three_sources.h5'</span>,<span class="st">'three_sources.csv'</span>,</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>                 <span class="st">'three_sourcesv7.mat'</span>,<span class="st">'three_sourcesv73.mat'</span>):</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    urllib.request.urlretrieve(url<span class="op">+</span>filename, filename)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p>Now we have the same data in four different formats: Acoular’s HDF5, .csv, Matlab version &lt;= 7 and Matlab versions &gt;=7.3.</p>
+<p><em>An experimental simulation to measurement comparison using a compact UMA-16 and a large-aperture 64-microphone Vogel spiral array</em></p>
+<p>Acoular’s <em>Getting Started – Part 1</em> provides the frequency-domain beamforming workflow, while the example <em>Three sources – Generate synthetic microphone array data</em> provides the method used to create the three-source reference data. Here, both are adapted to laboratory measurements with two different microphone arrays.</p>
+<p>Can the simulated spatial pattern be recovered experimentally? To answer this question the scene was reproduced with three loudspeakers driven by independent white-noise signals and measured successively with a UMA-16 and a 64-microphone Vogel spiral array. SpectAcoular’s Microphone Array Measurement App recorded the multichannel time data, and Acoular produced the conventional frequency-domain beamforming maps. For each array, the measured map was compared with a reference simulation using the same geometry, scan plane and analysis frequency.</p>
+<section id="simulation-method-used-as-reference" class="level2">
+<h2 class="anchored" data-anchor-id="simulation-method-used-as-reference">Simulation method used as reference</h2>
+<p>The synthetic reference data were generated by adapting Acoular’s <a href="https://www.acoular.org/auto_examples/introductory_examples/example_three_sources.html"><em>Three sources – Generate synthetic microphone array data</em></a> example. The original example creates three independent white-noise point sources and writes the resulting microphone signals to HDF5. Its relative source-amplitude scale (1.0, 0.7, 0.5) was retained in the adapted simulations.</p>
+<p>Two elements were adapted. First, the original <code>array64</code> microphone geometry was replaced by the geometry of the array being evaluated: the UMA-16 for the first comparison and the 64-microphone Vogel spiral for the second. Second, the three source coordinates were adjusted primarily through uniform scaling to match the physical aperture and scan window of each experimental setup while preserving their triangular arrangement and relative directions. A separate synthetic data set was therefore generated for each array. These array specific simulations were then processed with the frequency domain workflow from <a href="https://acoular.github.io/blog/2021/04/01/getstart1.html"><em>Getting Started with Acoular – Part 1</em></a>.</p>
 </section>
-<section id="hdf5-format" class="level3">
-<h3 class="anchored" data-anchor-id="hdf5-format">HDF5 format</h3>
-<p>HDF5 format is an open all purpose numerical data container file format. Data objects inside HDF5 files are stored in tree-like structure comparable to files and folders in a file system. Lets open the file and explore this structure, which is very simple in this case.</p>
-<p>We use the <a href="https://www.pytables.org/">pytables library</a> to access the file. This the very same library used by Acoular under the hood. Alternatively Acoular can also work with <a href="https://docs.h5py.org/en/stable/quick.html">h5py</a>.</p>
-<p>You could also use an HDF5 file viewer with a GUI (e.g.&nbsp;<a href="https://www.hdfgroup.org/downloads/hdfview/">HDFView</a>).</p>
-<div id="cell-4" class="cell" data-execution_count="2">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> tables</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>h5file <span class="op">=</span> tables.open_file(<span class="st">'three_sources.h5'</span>, mode <span class="op">=</span> <span class="st">'r'</span>) <span class="co"># read only mode</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>h5file.root</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="2">
-<pre><code>/ (RootGroup) ''
-  children := ['time_data' (EArray)]</code></pre>
-</div>
-</div>
-<p>In its root sits just one object (one ‘child’), which is an EArray (extensible array). Lets inspect its properties:</p>
-<div id="cell-6" class="cell" data-execution_count="3">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>h5file.root.time_data</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="3">
-<pre><code>/time_data (EArray(51200, 64)) ''
-  atom := Float32Atom(shape=(), dflt=0.0)
-  maindim := 0
-  flavor := 'numpy'
-  byteorder := 'little'
-  chunkshape := (256, 64)</code></pre>
-</div>
-</div>
-<p>We see that this array has the size of 51200 (samples) by 64 (channels). The values are stored as 32 bit float numbers. While less than the usual 64 bit, 32 bit accuracy is more than enough in this case and it saves file space. The data itself can be accessed just like for a numpy array. As an example, we read the first 10 samples of channel 47.</p>
-<div id="cell-8" class="cell" data-scrolled="true" data-execution_count="4">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>h5file.root.time_data[:<span class="dv">10</span>,<span class="dv">47</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="4">
-<pre><code>array([ 1.5875906 , -0.7917087 ,  3.1555338 ,  1.0036362 , -3.1655273 ,
-       -6.466202  , -0.19289835,  1.7383114 ,  6.901536  ,  2.723017  ],
-      dtype=float32)</code></pre>
-</div>
-</div>
-<p>Along with the data itself, the object stores also some metadata (‘attributes’).</p>
-<div id="cell-10" class="cell" data-execution_count="5">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>h5file.root.time_data.attrs</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="5">
-<pre><code>/time_data._v_attrs (AttributeSet), 5 attributes:
-   [CLASS := 'EARRAY',
-    EXTDIM := 0,
-    TITLE := '',
-    VERSION := '1.1',
-    sample_freq := 51200.0]</code></pre>
-</div>
-</div>
-<p>There is one custom attribute here, which is <code>sample_freq</code>. It specifies the sampling frequency. In our case 51200.0 Hz.</p>
-<p>If we now have data in some other format that we want to use with Acoular, there are two options: 1. We read that data and convert it into an HDF5 file that follows the specification explained. This is demonstrated in this blog post. 2. We extend Acoular to read the other file format directly. This would mean to subclass the <code>TimeSamples</code> class and requires some understanding of Acoular’s code and working mechanism.</p>
+<section id="experimental-principle" class="level2">
+<h2 class="anchored" data-anchor-id="experimental-principle">Experimental principle</h2>
+<p>The reference <em>Three sources</em> simulation uses ideal point sources. In the laboratory, each source was replaced by a loudspeaker with a diameter of 8 cm. Their positions were defined relative to the center of the microphone array, with the array lying in the plane <span class="math inline">\(z=0\)</span>:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: right;">Source</th>
+<th style="text-align: right;"><span class="math inline">\(x\)</span> (m)</th>
+<th style="text-align: right;"><span class="math inline">\(y\)</span> (m)</th>
+<th style="text-align: right;"><span class="math inline">\(z\)</span> (m)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">-0.20</td>
+<td style="text-align: right;">-0.20</td>
+<td style="text-align: right;">0.60</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0.30</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">0.60</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">0.20</td>
+<td style="text-align: right;">0.60</td>
+</tr>
+</tbody>
+</table>
+<p>Unlike a point source, a real loudspeaker occupies physical space. The complete source layout was therefore scaled by a factor of two relative to the reference <em>Three sources</em> simulation: both the lateral source coordinates and the source-to-array distance were doubled. This provided sufficient space for the 8 cm loudspeakers and their supports. Because every source distance was scaled by the same factor, the ratios <span class="math inline">\(x/z\)</span> and <span class="math inline">\(y/z\)</span> remained unchanged, preserving the source directions and the triangular topology of the reference scene.</p>
 </section>
-<section id="import-from-csv-format" class="level3">
-<h3 class="anchored" data-anchor-id="import-from-csv-format">Import from CSV format</h3>
-<p>The first option shall now be demonstrated using .csv formatted data. Despite beeing extra inefficient this human-readable text format is widely used. The file contains the same number of floating point numbers separated by commas on each line. Some .csv files have also one or more header lines explaining the data contained in the file. In our case there are no header lines. There are multiple options how to read such file into Python. We are going to use Numpy for this. Be warned, the import of this (relatively small) 80 MByte file takes some time.</p>
-<div id="cell-12" class="cell" data-scrolled="false" data-execution_count="6">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>datacsv <span class="op">=</span> np.genfromtxt(<span class="st">'three_sources.csv'</span>, delimiter<span class="op">=</span><span class="st">','</span>, dtype<span class="op">=</span><span class="st">'float32'</span>)</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>datacsv</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="6">
-<pre><code>array([[-0.43654928, -4.696499  , -2.9038546 , ..., -0.39481497,
-        -3.7462494 , -3.2238567 ],
-       [ 2.2970407 , -1.9746966 , -4.089035  , ..., -3.8922982 ,
-        -4.8707275 , -3.613382  ],
-       [-2.261127  ,  1.6419717 ,  3.4066103 , ..., -0.732125  ,
-         0.22087638, -1.6310387 ],
-       ...,
-       [-1.530854  , -1.2453959 ,  1.566295  , ..., -3.9039657 ,
-        -0.00989423, -6.0220094 ],
-       [ 0.47992265,  3.8888328 , -0.15509878, ..., -1.2525555 ,
-        -2.5308452 , -3.22349   ],
-       [-1.0162828 ,  1.230733  , -2.4700263 , ..., -5.659823  ,
-        -5.2780933 , -0.36301124]], dtype=float32)</code></pre>
-</div>
-</div>
-<p>Now the data is stored in the <code>datacsv</code> array. the next step is to create a new HFD5 file, store the data into that file and add the attribute for the sampling frequency.</p>
-<div id="cell-14" class="cell" data-execution_count="7">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>h5filecsv <span class="op">=</span> tables.open_file(<span class="st">'three_sources_from_csv.h5'</span>, mode<span class="op">=</span><span class="st">'w'</span>, </span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>                             title<span class="op">=</span><span class="st">'three_sources'</span>)</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>earraycsv <span class="op">=</span> h5filecsv.create_earray(<span class="st">'/'</span>, <span class="st">'time_data'</span>, obj<span class="op">=</span>datacsv)</span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>display(earraycsv)</span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>h5filecsv.root.time_data.set_attr(<span class="st">'sample_freq'</span>,<span class="fl">51200.0</span>)</span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>h5filecsv.close()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display">
-<pre><code>/time_data (EArray(51200, 64)) ''
-  atom := Float32Atom(shape=(), dflt=0.0)
-  maindim := 0
-  flavor := 'numpy'
-  byteorder := 'little'
-  chunkshape := (256, 64)</code></pre>
-</div>
-</div>
-<p>Just as before with the original HDF5 file we now have the data in new HDF5 file that could be used as data source for Acoular. There is one possible pitfall with this approach: the data is completely read into the computer memory before beeing stored into the HDF5 file. If the data is really huge, say hundreds of channels and some minutes of recording, it might not fit into the memory. In this case, a more sophisticated approach is needed, where chunks of data are read and stored consecutively. Because we use an EArray, this is possible, but we would have to modify the code.</p>
-<p>As mentioned before, there are other options to read the .csv data. One that deserves to be mentioned here is <a href="https://pandas.pydata.org/">Pandas</a> which reads a lot of different data formats.</p>
+<section id="measurement-hardware-and-software" class="level2">
+<h2 class="anchored" data-anchor-id="measurement-hardware-and-software">Measurement hardware and software</h2>
+<p>The UMA-16 experiment was run on a Raspberry Pi Compute Module 5 (CM5), and the complete measurement proceeded reliably without any issues. For the 64-microphone Vogel spiral array, all microphone channels were acquired simultaneously with a 64-channel SINUS Tornado system.</p>
+<p>The software environment was managed with <code>uv</code>. The workflow used Acoular 26.4 for beamforming, SpectAcoular 26.4 for acquisition with the <a href="https://acoular.org/spectacoular/dev/apps/measurementapp.html">Microphone Array Measurement App</a>, and <code>sounddevice</code> 0.5.5 for multichannel playback. The uv version is 0.11.25, and the Raspberry Pi runs Linux 6.18.33+rpt-rpi-2712 under Debian GNU/Linux 13.5 (Trixie). These versions were used throughout the experiments and the subsequent analysis.</p>
 </section>
-<section id="import-from-matlab" class="level3">
-<h3 class="anchored" data-anchor-id="import-from-matlab">Import from Matlab</h3>
-<p>For some reason it is quite popular to store data in the format used by Matlab. However, it is important to know that despite the same extension (.mat), there are different formats. If we have any of the formats used prior to Matlab v7, then we can use Scipy to import this:</p>
-<div id="cell-16" class="cell" data-execution_count="8">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.io <span class="im">import</span> loadmat</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>ans <span class="op">=</span> loadmat(<span class="st">'three_sourcesv7.mat'</span>)[<span class="st">'ans'</span>]</span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>datamat7 <span class="op">=</span> np.array(ans, dtype<span class="op">=</span><span class="st">'float32'</span>)</span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>h5filemat7 <span class="op">=</span> tables.open_file(<span class="st">'three_sources_from_mat7.h5'</span>, mode<span class="op">=</span><span class="st">'w'</span>, </span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>                             title<span class="op">=</span><span class="st">'three_sources'</span>)</span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>earraymat7 <span class="op">=</span> h5filemat7.create_earray(<span class="st">'/'</span>, <span class="st">'time_data'</span>, obj<span class="op">=</span>datamat7)</span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>display(earraymat7)</span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>h5filemat7.root.time_data.set_attr(<span class="st">'sample_freq'</span>,<span class="fl">51200.0</span>)</span>
-<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>h5filemat7.close()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display">
-<pre><code>/time_data (EArray(51200, 64)) ''
-  atom := Float32Atom(shape=(), dflt=0.0)
-  maindim := 0
-  flavor := 'numpy'
-  byteorder := 'little'
-  chunkshape := (256, 64)</code></pre>
+<section id="generating-three-independent-broadband-sources" class="level2">
+<h2 class="anchored" data-anchor-id="generating-three-independent-broadband-sources">Generating three independent broadband sources</h2>
+<p>A different random white-noise sequence was generated for each playback channel with the <code>sounddevice</code> library. The first three output channels drove the three loudspeakers; the remaining channels were silent. Because each column is generated independently by <code>numpy.random.randn</code>, the three source signals are statistically uncorrelated.</p>
+<p>Playback lasted 60 s at 48 kHz. After normalization by the largest value, the three non-zero channel weights retain the relative amplitude scale 1.0, 0.7 and 0.5 used in the synthetic-data example. These weights describe electrical drive amplitudes, not calibrated sound-pressure levels at the loudspeaker positions.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sounddevice <span class="im">as</span> sd</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>device_id <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>sample_rate <span class="op">=</span> <span class="dv">48000</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>duration <span class="op">=</span> <span class="dv">60</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>channels <span class="op">=</span> <span class="dv">8</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(sd.query_devices()) <span class="co"># allow to know the device_id used</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>volumes <span class="op">=</span> np.array([<span class="fl">0.075</span>, <span class="fl">0.150</span>, <span class="fl">0.105</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>])</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>samples <span class="op">=</span> <span class="bu">int</span>(sample_rate <span class="op">*</span> duration)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>audio <span class="op">=</span> np.random.randn(samples, channels).astype(np.float32)</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>audio <span class="op">=</span> audio <span class="op">*</span> volumes</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Playing noise"</span>)</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>sd.play(audio, samplerate<span class="op">=</span>sample_rate, device<span class="op">=</span>device_id)</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>sd.wait()</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"End"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="measurement-chain-and-calibration" class="level2">
+<h2 class="anchored" data-anchor-id="measurement-chain-and-calibration">Measurement chain and calibration</h2>
+<p>SpectAcoular’s Microphone Array Measurement App stored the microphone signals as HDF5 time histories. Before acquisition, all microphones were calibrated with a reference acoustic calibrator to ensure consistent channel weighting. Without this correction, sensitivity differences could be interpreted by the beamformer as spatial level differences.</p>
+<p>Four HDF5 data sets support the two simulation to measurement comparisons. For each array, one file contains the adapted synthetic microphone signals and the other contains the calibrated laboratory measurement:</p>
+<ul>
+<li><code>raw data/three_sources_uma16_simulated.h5</code> — simulated data generated with the UMA-16 geometry;</li>
+<li><code>raw data/three_sources_uma16_measured.h5</code> — laboratory measurement with the UMA-16;</li>
+<li><code>raw data/three_sources_vogel64_simulated.h5</code> — simulated data generated with the Vogel geometry;</li>
+<li><code>raw data/three_sources_vogel64_measured.h5</code> — laboratory measurement with the 64-microphone Vogel array.</li>
+</ul>
+</section>
+<section id="first-measurement-uma-16-minidsp" class="level2">
+<h2 class="anchored" data-anchor-id="first-measurement-uma-16-minidsp">First measurement: UMA-16 miniDSP</h2>
+<p>The first measurement used the 4 × 4 UMA-16. Its small aperture limits spatial resolution at low frequencies, so the 7 kHz third-octave band was selected from the broadband recording to separate the three source directions.</p>
+<div style="text-align:center">
+<img src="picture/first experiment.jpeg" width="850" alt="Three loudspeakers measured with the UMA-16">
+<p>
+<b>Figure 1.</b> First laboratory setup: three loudspeakers facing the compact UMA-16.
+</p>
+</div>
+<div style="text-align:center">
+<img src="picture/array16umageom.png" width="500" alt="UMA-16 microphone geometry">
+<p>
+<b>Figure 2.</b> Planar 4 × 4 geometry of the UMA-16.
+</p>
+</div>
+<section id="uma-16-result-at-7-khz" class="level3">
+<h3 class="anchored" data-anchor-id="uma-16-result-at-7-khz">UMA-16 result at 7 kHz</h3>
+<p>At 7 kHz, the measured map recovers the three sources and their triangular arrangement. However, the maps are not identical: the peaks are slightly shifted, and their shapes and relative levels differ. These differences may result from the finite size of the loudspeakers, positioning uncertainty, room reflections and the UMA-16’s limited aperture. Because the two maps use different decibel scales, the comparison concerns source localization rather than absolute levels.</p>
+<div style="display:flex; gap:20px; justify-content:center; align-items:flex-start;">
+<div style="width:48%; text-align:center;">
+<pre><code>&lt;img src="picture/simuuma7000hzx2.png" style="width:100%;" alt="Simulated UMA-16 map at 7 kHz"&gt;
+&lt;p&gt;&lt;b&gt;(a)&lt;/b&gt; Simulated map at 7 kHz.&lt;/p&gt;</code></pre>
+</div>
+<div style="width:48%; text-align:center;">
+<pre><code>&lt;img src="picture/exp7000hzuma16.png" style="width:100%;" alt="Measured UMA-16 map at 7 kHz"&gt;
+&lt;p&gt;&lt;b&gt;(b)&lt;/b&gt; Measured map at 7 kHz.&lt;/p&gt;</code></pre>
 </div>
 </div>
-<p>The format of .mat file from version 7.3 onwards is essentially an HDF5 file itself! It just uses another file name extension. Of course the internal structure is different from what Acoular is using. However, we can open it with pytables and read the data in it.</p>
-<div id="cell-18" class="cell" data-execution_count="9">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>matfile73 <span class="op">=</span> tables.open_file(<span class="st">'three_sourcesv73.mat'</span>, mode <span class="op">=</span> <span class="st">'r'</span>)</span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="co"># be aware of Matlab transposing the array here</span></span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>datamat73 <span class="op">=</span> np.array(matfile73.root.ans[:,:], dtype<span class="op">=</span><span class="st">'float32'</span>).T</span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>h5filemat73 <span class="op">=</span> tables.open_file(<span class="st">'three_sources_from_mat73.h5'</span>, mode<span class="op">=</span><span class="st">'w'</span>, </span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>                             title<span class="op">=</span><span class="st">'three_sources'</span>)</span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>earraymat73 <span class="op">=</span> h5filemat73.create_earray(<span class="st">'/'</span>, <span class="st">'time_data'</span>, obj<span class="op">=</span>datamat73)</span>
-<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>display(earraymat73)</span>
-<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>h5filemat73.root.time_data.set_attr(<span class="st">'sample_freq'</span>,<span class="fl">51200.0</span>)</span>
-<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>h5filemat73.close()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display">
-<pre><code>/time_data (EArray(51200, 64)) ''
-  atom := Float32Atom(shape=(), dflt=0.0)
-  maindim := 0
-  flavor := 'numpy'
-  byteorder := 'little'
-  chunkshape := (256, 64)</code></pre>
+<div style="text-align:center;">
+<p>
+<b>Figure 3.</b> Side-by-side comparison of the simulated and measured UMA-16 maps at 7 kHz, both displayed over a ±0.4 m scan window.
+</p>
+</div>
+</section>
+</section>
+<section id="second-measurement-64-microphone-vogel-spiral-array" class="level2">
+<h2 class="anchored" data-anchor-id="second-measurement-64-microphone-vogel-spiral-array">Second measurement: 64-microphone Vogel spiral array</h2>
+<p>The second measurement used 64 calibrated microphones arranged as a planar Vogel spiral. Its substantially larger aperture provides greater spatial discrimination at lower frequencies. The sources were located 0.6 m from the array plane, and the scan grid covered <span class="math inline">\(-0.4 \leq x,y \leq 0.4\)</span> m.</p>
+<div style="text-align:center">
+<img src="picture/second experiment big array.jpeg" width="700" alt="Three-source experiment with the 64-microphone Vogel array">
+<p>
+<b>Figure 4.</b> Scaled three-source scene in front of the 64-microphone Vogel spiral array.
+</p>
+</div>
+<div style="text-align:center">
+<img src="picture/array64geom.png" width="520" alt="64-microphone Vogel spiral geometry">
+<p>
+<b>Figure 5.</b> Measured coordinates of the planar 64-microphone Vogel spiral array.
+</p>
+</div>
+<section id="vogel-array-result-at-2.5-khz" class="level3">
+<h3 class="anchored" data-anchor-id="vogel-array-result-at-2.5-khz">Vogel-array result at 2.5 kHz</h3>
+<p>At 2.5 kHz, both maps show three compact maxima near the prescribed coordinates: one in the lower-left quadrant, one near the positive <span class="math inline">\(x\)</span> axis and one above the center. The Vogel array therefore resolves the same spatial pattern at a substantially lower frequency than the UMA-16.</p>
+<div style="display:flex; gap:20px; justify-content:center; align-items:flex-start;">
+<div style="width:48%; text-align:center;">
+<pre><code>&lt;img src="picture/simu2500hz64arrayvogel.png" style="width:100%;" alt="Simulated Vogel-array map at 2.5 kHz"&gt;
+&lt;p&gt;&lt;b&gt;(a)&lt;/b&gt; Simulated map at 2.5 kHz.&lt;/p&gt;</code></pre>
+</div>
+<div style="width:48%; text-align:center;">
+<pre><code>&lt;img src="picture/2500hz64array.png" style="width:100%;" alt="Measured Vogel-array map at 2.5 kHz"&gt;
+&lt;p&gt;&lt;b&gt;(b)&lt;/b&gt; Measured map at 2.5 kHz.&lt;/p&gt;</code></pre>
 </div>
 </div>
-<p>This blog post has demostrated how to import data from foreign formats into Acoular. It can also be used as a guide how to convert any other formats not explicitly mentioned here.</p>
+<div style="text-align:center;">
+<p>
+<b>Figure 6.</b> Side-by-side comparison of the simulated and measured maps at 2.5 kHz using the 64-microphone Vogel geometry.
+</p>
+</div>
+</section>
+</section>
+<section id="observations" class="level2">
+<h2 class="anchored" data-anchor-id="observations">Observations</h2>
+<p>Three practical lessons emerge from the comparison:</p>
+<ul>
+<li><strong>Array aperture determines the useful frequency range.</strong> The UMA-16 requires a higher analysis frequency to separate the sources, whereas the larger Vogel array provides useful spatial discrimination at 2.5 kHz.</li>
+<li><strong>Frequency selection is a compromise.</strong> Increasing frequency narrows the main lobe of a compact array, but it also increases the risk of spatial aliasing when the microphone spacing becomes large relative to the wavelength.</li>
+<li><strong>Measured and simulated maps will not be identical.</strong> Reflections, loudspeaker directivity, background noise and finite recording duration broaden or distort measured maxima but are absent or idealized in the simulation.</li>
+</ul>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<p>The Acoular three-source workflow was successfully transferred from simulation to two laboratory microphone arrays. The UMA-16 recovered the three-source arrangement at 7 kHz, while the larger Vogel array recovered it at 2.5 kHz with more precise results.</p>
+<p>Together, these results show that the complete workflow can localize the three real sources, from multichannel excitation and microphone acquisition to frequency-domain acoustic imaging. They also show that the <em>Three sources</em> synthetic-data method and the Part 1 processing chain can be adapted to different microphone arrays by using the geometry and processing parameters of each experiment.</p>
+</section>
+<section id="software-and-references" class="level2">
+<h2 class="anchored" data-anchor-id="software-and-references">Software and references</h2>
+<ul>
+<li><a href="https://acoular.github.io/">Acoular documentation and blog</a></li>
+<li><a href="https://acoular.github.io/blog/2021/04/01/getstart1.html">Getting started with Acoular — Part 1</a></li>
+<li><a href="https://www.acoular.org/auto_examples/introductory_examples/example_three_sources.html">Three sources — Generate synthetic microphone array data</a></li>
+<li><a href="https://acoular.org/spectacoular/dev/apps/measurementapp.html">SpectAcoular Microphone Array Measurement App</a></li>
+<li><a href="https://pypi.org/project/acoular/">Acoular on PyPI</a></li>
+<li><a href="https://pypi.org/project/spectacoular/">SpectAcoular on PyPI</a></li>
+<li><a href="https://python-sounddevice.readthedocs.io/en/latest/"><code>sounddevice</code> documentation</a></li>
+</ul>
 
 
 </section>
@@ -768,4 +818,4 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 
-<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/acoular/blog2/blob/main/posts/convert-input-data/convert-input-data.ipynb" class="toc-action"><i class="bi bi-github"></i>View source</a></li></ul></div></div></div></footer></body></html>
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/acoular/blog2/blob/main/posts/three-sources-experiment/three_sources_lab_validation.ipynb" class="toc-action"><i class="bi bi-github"></i>View source</a></li></ul></div></div></div></footer></body></html>

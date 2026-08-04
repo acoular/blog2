@@ -2,6 +2,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/three-sources-experiment/three_sources_lab_validation.html",
       "/posts/auralization/drone-auralization-example.html",
       "/posts/convert-input-data/convert-input-data.html",
       "/posts/getstart/getstart3.html",
